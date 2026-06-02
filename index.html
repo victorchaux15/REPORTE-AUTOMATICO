@@ -145,6 +145,17 @@ async function gen(){
   var ak = document.getElementById('ak').value.trim();
   if(!prompt) return showErr('Escribe un prompt.');
   if(!ak||!ak.startsWith('sk-')) return showErr('API Key invalida. Debe empezar con sk-');
+
+  // Validar años mencionados en el prompt
+  var yearsInPrompt = prompt.match(/\b(20\d{2})\b/g);
+  if(yearsInPrompt) {
+    var validYears = ['2014','2015','2016','2017'];
+    var invalidYears = yearsInPrompt.filter(function(y){ return !validYears.includes(y); });
+    if(invalidYears.length > 0) {
+      return showErr('El dataset solo contiene datos de 2014, 2015, 2016 y 2017. El año ' + invalidYears.join(', ') + ' no existe en el dataset.');
+    }
+  }
+
   setSt(true,'Consultando Claude...');
   hideErr();
 
