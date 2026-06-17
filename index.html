@@ -15,6 +15,14 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1a1a2e;min-height:
 .ui-header h1{font-size:17px;font-weight:600}
 .ui-header p{font-size:12px;color:#94a3b8;margin-top:2px}
 .badge{background:#3b82f6;color:white;font-size:10px;font-weight:600;padding:3px 9px;border-radius:4px;letter-spacing:.5px;text-transform:uppercase;margin-left:auto;white-space:nowrap}
+
+/* Tabs */
+.tabs{display:flex;gap:0;margin-bottom:20px;background:white;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden}
+.tab{flex:1;padding:11px 16px;font-size:13px;font-weight:600;color:#64748b;background:transparent;border:none;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif}
+.tab.active{background:#1d4ed8;color:white}
+.tab:hover:not(.active){background:#f1f5f9}
+.tab-panel{display:none}.tab-panel.active{display:block}
+
 .card{background:white;border:1px solid #e2e8f0;border-radius:12px;padding:22px;margin-bottom:16px}
 .lbl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#64748b;margin-bottom:10px}
 .hints{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px}
@@ -31,12 +39,41 @@ textarea::placeholder{color:#cbd5e1}
 .btn-gen{background:#1d4ed8;color:white;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-weight:600;font-size:13px;padding:11px 22px;cursor:pointer;transition:background .2s;white-space:nowrap}
 .btn-gen:hover{background:#1e40af}
 .btn-gen:disabled{background:#93c5fd;cursor:not-allowed}
+.btn-ask{background:#0f766e;color:white;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-weight:600;font-size:13px;padding:11px 22px;cursor:pointer;transition:background .2s;white-space:nowrap}
+.btn-ask:hover{background:#0d6560}
+.btn-ask:disabled{background:#5eead4;cursor:not-allowed}
 .stbar{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:11px 15px;font-size:13px;color:#1d4ed8;margin-bottom:14px;display:none;align-items:center;gap:10px}
 .stbar.vis{display:flex}
 .spin{width:14px;height:14px;border:2px solid #bfdbfe;border-top-color:#1d4ed8;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
 .errbox{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:11px 15px;font-size:12px;color:#dc2626;margin-bottom:14px;display:none;word-break:break-all}
 .errbox.vis{display:block}
+
+/* Consulta rápida resultado */
+#qrw{display:none}
+#qrw.vis{display:block}
+.q-answer-box{background:white;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;margin-bottom:16px}
+.q-answer-hd{background:#0f766e;color:white;padding:12px 18px;display:flex;justify-content:space-between;align-items:center}
+.q-answer-hd span{font-size:13px;font-weight:600}
+.q-answer-hd small{font-size:11px;opacity:.8}
+.q-answer-body{padding:18px 20px;font-size:13.5px;line-height:1.8;color:#1e293b}
+.q-answer-body strong{color:#0f172a}
+.q-answer-body h3{font-size:13px;font-weight:700;color:#0f172a;margin:14px 0 8px;text-transform:uppercase;letter-spacing:.5px}
+/* Tabla de consulta */
+.q-tbl{width:100%;border-collapse:collapse;margin:12px 0;font-size:12.5px}
+.q-tbl th{background:#f1f5f9;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#475569;padding:7px 10px;border:1px solid #e2e8f0;text-align:left}
+.q-tbl td{padding:7px 10px;border:1px solid #e2e8f0;color:#1e293b}
+.q-tbl tr:nth-child(even) td{background:#f8fafc}
+.q-tbl td.num{text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
+.q-tbl td.pos{color:#16a34a;font-weight:700}
+.q-tbl td.neg{color:#dc2626;font-weight:700}
+.q-tbl td.rank{text-align:center;font-weight:700;color:#64748b;font-size:11px}
+.q-hist{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.q-hist-btn{background:#f1f5f9;border:1px solid #e2e8f0;color:#475569;padding:5px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;border:none}
+.q-hist-btn:hover{background:#dbeafe;color:#1d4ed8}
+.q-source{font-size:10px;color:#94a3b8;padding:8px 18px;background:#f8fafc;border-top:1px solid #e2e8f0;font-style:italic}
+
+/* Reporte */
 #rw{display:none}
 #rw.vis{display:block}
 .toolbar{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;background:white;border:1px solid #e2e8f0;border-radius:10px;margin-bottom:14px;flex-wrap:wrap;gap:10px}
@@ -73,6 +110,8 @@ textarea::placeholder{color:#cbd5e1}
 .rf{border-top:1px solid #e2e8f0;padding:8px 20px;display:flex;justify-content:space-between;font-size:10px;color:#94a3b8;background:#f8fafc;margin-top:6px}
 @media print{
   body{background:white!important}
+  .tabs,.tab-panel:not(.active){display:none!important}
+  .tab-panel.active{display:block!important}
   .wrap>*:not(#rw){display:none!important}
   #rw{display:block!important}
   .toolbar{display:none!important}
@@ -91,88 +130,163 @@ textarea::placeholder{color:#cbd5e1}
 <div class="ui-header">
   <div>
     <h1>Generador de Reporte Ejecutivo</h1>
-    <p>Sample Superstore 2014&#8211;2017 &middot; J. A. Arias &middot; V. Chaux &middot; K. D. Ca&ntilde;&oacute;n</p>
+    <p>Sample Superstore 2014–2017 · J. A. Arias · V. Chaux · K. D. Cañón</p>
   </div>
   <div class="badge">Tesis MDS</div>
 </div>
 
-<div class="card">
-  <div class="lbl">Prompt del reporte</div>
-  <div class="hints">
-    <button class="hint" onclick="hp(this)">Reporte ejecutivo completo (todas las secciones)</button>
-    <button class="hint" onclick="hp(this)">Solo el a&ntilde;o 2017</button>
-    <button class="hint" onclick="hp(this)">Rentabilidad por categor&iacute;a, regi&oacute;n y sub-categor&iacute;a</button>
-    <button class="hint" onclick="hp(this)">An&aacute;lisis de segmentos y tendencias anuales</button>
-    <button class="hint" onclick="hp(this)">Descuentos y modos de env&iacute;o</button>
-  </div>
-  <textarea id="up" placeholder="Ej: Genera un reporte ejecutivo del a&#241;o 2017 con KPIs, tendencia, categor&#237;as y regiones..."></textarea>
-  <div class="row">
-    <div class="fw">
-      <label>API Key &middot; Anthropic (Claude)</label>
-      <input type="password" id="ak" placeholder="sk-ant-api03-..." />
+<!-- API Key compartida -->
+<div class="card" style="padding:16px 22px">
+  <div class="lbl">API Key · Anthropic (Claude)</div>
+  <input type="password" id="ak" placeholder="sk-ant-api03-..." style="width:100%;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;color:#1e293b;font-family:'Inter',sans-serif;font-size:13px;padding:10px 13px;outline:none;transition:border-color .2s"/>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('consulta')">💬 Consulta rápida</button>
+  <button class="tab" onclick="switchTab('reporte')">📊 Reporte completo</button>
+</div>
+
+<!-- TAB: Consulta rápida -->
+<div id="tab-consulta" class="tab-panel active">
+  <div class="card">
+    <div class="lbl">Hazme una pregunta sobre el dataset</div>
+    <div class="hints" id="qhints">
+      <button class="hint" onclick="hq(this)">¿Cuál fue el top 5 de ventas por subcategoría en 2017?</button>
+      <button class="hint" onclick="hq(this)">¿Qué región tuvo las ventas más bajas y cuál fue su margen?</button>
+      <button class="hint" onclick="hq(this)">¿Cuáles subcategorías generaron pérdidas?</button>
+      <button class="hint" onclick="hq(this)">¿Cuál fue el mes con mayor ganancia en 2016?</button>
+      <button class="hint" onclick="hq(this)">¿Cómo evolucionaron las ventas año a año?</button>
+      <button class="hint" onclick="hq(this)">¿Cuál es el impacto de los descuentos en el margen?</button>
+      <button class="hint" onclick="hq(this)">¿Qué segmento tiene mejor relación ventas/ganancia?</button>
+      <button class="hint" onclick="hq(this)">¿Cuál fue el trimestre más rentable del período?</button>
+      <button class="hint" onclick="hq(this)">Compara 2014 vs 2017: crecimiento en ventas y ganancia</button>
+      <button class="hint" onclick="hq(this)">¿Qué modo de envío tiene el mejor margen?</button>
     </div>
-    <button class="btn-gen" id="bg" onclick="gen()">&#9654; Generar Reporte</button>
+    <textarea id="qp" placeholder="Ej: ¿Cuál fue el top 3 de subcategorías con mayor ganancia en 2015? ¿Qué mes tuvo las ventas más bajas?" rows="3"></textarea>
+    <div class="row" style="margin-top:12px">
+      <button class="btn-ask" id="bq" onclick="ask()">🔍 Consultar</button>
+    </div>
+  </div>
+
+  <div class="stbar" id="qsb"><div class="spin"></div><span id="qst">Analizando datos...</span></div>
+  <div class="errbox" id="qeb"></div>
+  <div id="qrw"></div>
+</div>
+
+<!-- TAB: Reporte completo -->
+<div id="tab-reporte" class="tab-panel">
+  <div class="card">
+    <div class="lbl">Prompt del reporte</div>
+    <div class="hints">
+      <button class="hint" onclick="hp(this)">Reporte ejecutivo completo (todas las secciones)</button>
+      <button class="hint" onclick="hp(this)">Solo el año 2017</button>
+      <button class="hint" onclick="hp(this)">Rentabilidad por categoría, región y sub-categoría</button>
+      <button class="hint" onclick="hp(this)">Análisis de segmentos y tendencias anuales</button>
+      <button class="hint" onclick="hp(this)">Descuentos y modos de envío</button>
+    </div>
+    <textarea id="up" placeholder="Ej: Genera un reporte ejecutivo del año 2017 con KPIs, tendencia, categorías y regiones..."></textarea>
+    <div class="row">
+      <button class="btn-gen" id="bg" onclick="gen()">▶ Generar Reporte</button>
+    </div>
+  </div>
+
+  <div class="stbar" id="sb"><div class="spin"></div><span id="st">Consultando Claude...</span></div>
+  <div class="errbox" id="eb"></div>
+
+  <div id="rw">
+    <div class="toolbar">
+      <span id="rm">Reporte generado</span>
+      <button class="btn-pdf" onclick="window.print()">⬇ Descargar PDF</button>
+    </div>
+    <div id="report"></div>
   </div>
 </div>
 
-<div class="stbar" id="sb"><div class="spin"></div><span id="st">Consultando Claude...</span></div>
-<div class="errbox" id="eb"></div>
+</div><!-- /wrap -->
 
-<div id="rw">
-  <div class="toolbar">
-    <span id="rm">Reporte generado</span>
-    <button class="btn-pdf" onclick="window.print()">&#11015; Descargar PDF</button>
-  </div>
-  <div id="report"></div>
-</div>
-
-</div>
 <script>
-const S = {"total_sales": 844204.58, "total_profit": 116551.82, "total_qty": 31150.0, "row_count": 8680, "unique_orders": 4683, "unique_customers": 790, "margin": 13.81, "by_cat": {"Furniture": {"sales": 284015.22, "profit": 17309.93, "qty": 5518.0, "count": 1649}, "Office Supplies": {"sales": 326754.89, "profit": 65844.1, "qty": 20715.0, "count": 5609}, "Technology": {"sales": 233434.47, "profit": 33397.8, "qty": 4917.0, "count": 1422}}, "by_sub": {"Bookcases": {"sales": 45073.25, "profit": 1275.55, "qty": 462.0, "count": 155, "category": "Furniture"}, "Labels": {"sales": 9090.43, "profit": 3983.56, "qty": 1348.0, "count": 357, "category": "Office Supplies"}, "Storage": {"sales": 117415.76, "profit": 7346.79, "qty": 2542.0, "count": 736, "category": "Office Supplies"}, "Furnishings": {"sales": 70655.5, "profit": 11918.55, "qty": 3280.0, "count": 913, "category": "Furniture"}, "Art": {"sales": 25749.92, "profit": 6303.91, "qty": 2985.0, "count": 794, "category": "Office Supplies"}, "Binders": {"sales": 45904.28, "profit": 6767.23, "qty": 5353.0, "count": 1393, "category": "Office Supplies"}, "Appliances": {"sales": 41618.44, "profit": 8156.11, "qty": 1269.0, "count": 372, "category": "Office Supplies"}, "Paper": {"sales": 62032.99, "profit": 26529.25, "qty": 4876.0, "count": 1323, "category": "Office Supplies"}, "Phones": {"sales": 134295.58, "profit": 15102.41, "qty": 2316.0, "count": 695, "category": "Technology"}, "Chairs": {"sales": 126408.9, "profit": 4401.6, "qty": 1400.0, "count": 439, "category": "Furniture"}, "Accessories": {"sales": 85247.16, "profit": 16832.47, "qty": 2474.0, "count": 681, "category": "Technology"}, "Envelopes": {"sales": 11882.2, "profit": 5002.86, "qty": 832.0, "count": 240, "category": "Office Supplies"}, "Fasteners": {"sales": 3024.28, "profit": 949.52, "qty": 914.0, "count": 217, "category": "Office Supplies"}, "Supplies": {"sales": 10036.6, "profit": 804.88, "qty": 596.0, "count": 177, "category": "Office Supplies"}, "Tables": {"sales": 41877.57, "profit": -285.78, "qty": 376.0, "count": 142, "category": "Furniture"}, "Machines": {"sales": 9131.9, "profit": 634.95, "qty": 105.0, "count": 36, "category": "Technology"}, "Copiers": {"sales": 4759.84, "profit": 827.97, "qty": 22.0, "count": 10, "category": "Technology"}}, "by_region": {"South": {"sales": 132120.74, "profit": 20261.84, "count": 1402}, "West": {"sales": 314857.3, "profit": 48526.03, "count": 2851}, "Central": {"sales": 182247.44, "profit": 16345.52, "count": 1993}, "East": {"sales": 214979.1, "profit": 31418.43, "count": 2434}}, "by_seg": {"Consumer": {"sales": 453319.62, "profit": 60852.62, "count": 4557}, "Corporate": {"sales": 247406.11, "profit": 34478.4, "count": 2591}, "Home Office": {"sales": 143478.85, "profit": 21220.8, "count": 1532}}, "by_year": {"2014": {"sales": 173108.23, "profit": 23612.17, "count": 1734}, "2015": {"sales": 181435.5, "profit": 26355.31, "count": 1812}, "2016": {"sales": 210187.78, "profit": 29017.42, "count": 2228}, "2017": {"sales": 279473.07, "profit": 37566.92, "count": 2906}}, "by_ym": {"2014-01": {"sales": 5983.22, "profit": 528.51, "count": 70, "year": 2014, "month": 1}, "2014-02": {"sales": 2794.77, "profit": 580.62, "count": 44, "year": 2014, "month": 2}, "2014-03": {"sales": 12694.55, "profit": 1492.75, "count": 135, "year": 2014, "month": 3}, "2014-04": {"sales": 11307.06, "profit": 1990.16, "count": 117, "year": 2014, "month": 4}, "2014-05": {"sales": 8761.91, "profit": 1392.6, "count": 103, "year": 2014, "month": 5}, "2014-06": {"sales": 10051.85, "profit": 1549.58, "count": 111, "year": 2014, "month": 6}, "2014-07": {"sales": 14229.38, "profit": 1648.89, "count": 129, "year": 2014, "month": 7}, "2014-08": {"sales": 11514.27, "profit": 2106.14, "count": 132, "year": 2014, "month": 8}, "2014-09": {"sales": 19692.96, "profit": 3344.56, "count": 228, "year": 2014, "month": 9}, "2014-10": {"sales": 17177.91, "profit": 1699.92, "count": 147, "year": 2014, "month": 10}, "2014-11": {"sales": 31148.22, "profit": 3980.4, "count": 274, "year": 2014, "month": 11}, "2014-12": {"sales": 27752.12, "profit": 3298.05, "count": 244, "year": 2014, "month": 12}, "2015-01": {"sales": 3989.68, "profit": 662.79, "count": 48, "year": 2015, "month": 1}, "2015-02": {"sales": 5291.3, "profit": 715.13, "count": 57, "year": 2015, "month": 2}, "2015-03": {"sales": 10342.85, "profit": 1928.27, "count": 117, "year": 2015, "month": 3}, "2015-04": {"sales": 12853.03, "profit": 1276.65, "count": 135, "year": 2015, "month": 4}, "2015-05": {"sales": 13097.7, "profit": 1822.11, "count": 130, "year": 2015, "month": 5}, "2015-06": {"sales": 11690.2, "profit": 1850.28, "count": 125, "year": 2015, "month": 6}, "2015-07": {"sales": 14673.74, "profit": 2106.13, "count": 121, "year": 2015, "month": 7}, "2015-08": {"sales": 13968.5, "profit": 1956.7, "count": 134, "year": 2015, "month": 8}, "2015-09": {"sales": 23645.17, "profit": 3702.03, "count": 252, "year": 2015, "month": 9}, "2015-10": {"sales": 16286.31, "profit": 2241.15, "count": 148, "year": 2015, "month": 10}, "2015-11": {"sales": 30384.03, "profit": 3820.86, "count": 275, "year": 2015, "month": 11}, "2015-12": {"sales": 25212.99, "profit": 4273.24, "count": 270, "year": 2015, "month": 12}, "2016-01": {"sales": 7467.36, "profit": 1062.14, "count": 78, "year": 2016, "month": 1}, "2016-02": {"sales": 8727.59, "profit": 1182.8, "count": 73, "year": 2016, "month": 2}, "2016-03": {"sales": 14498.05, "profit": 1422.2, "count": 132, "year": 2016, "month": 3}, "2016-04": {"sales": 13068.09, "profit": 1539.32, "count": 148, "year": 2016, "month": 4}, "2016-05": {"sales": 14910.67, "profit": 2176.63, "count": 194, "year": 2016, "month": 5}, "2016-06": {"sales": 16556.15, "profit": 2568.44, "count": 172, "year": 2016, "month": 6}, "2016-07": {"sales": 17414.78, "profit": 2344.72, "count": 177, "year": 2016, "month": 7}, "2016-08": {"sales": 15609.06, "profit": 1998.88, "count": 160, "year": 2016, "month": 8}, "2016-09": {"sales": 26961.6, "profit": 3962.08, "count": 312, "year": 2016, "month": 9}, "2016-10": {"sales": 15127.56, "profit": 1920.69, "count": 171, "year": 2016, "month": 10}, "2016-11": {"sales": 30229.52, "profit": 4205.32, "count": 322, "year": 2016, "month": 11}, "2016-12": {"sales": 29617.36, "profit": 4634.2, "count": 289, "year": 2016, "month": 12}, "2017-01": {"sales": 11075.02, "profit": 1409.49, "count": 132, "year": 2017, "month": 1}, "2017-02": {"sales": 8972.14, "profit": 1329.69, "count": 92, "year": 2017, "month": 2}, "2017-03": {"sales": 21280.76, "profit": 3448.4, "count": 207, "year": 2017, "month": 3}, "2017-04": {"sales": 17475.29, "profit": 1935.09, "count": 188, "year": 2017, "month": 4}, "2017-05": {"sales": 20404.68, "profit": 2693.11, "count": 213, "year": 2017, "month": 5}, "2017-06": {"sales": 22393.43, "profit": 2708.88, "count": 215, "year": 2017, "month": 6}, "2017-07": {"sales": 21127.68, "profit": 3205.66, "count": 199, "year": 2017, "month": 7}, "2017-08": {"sales": 19506.83, "profit": 3466.31, "count": 185, "year": 2017, "month": 8}, "2017-09": {"sales": 35264.4, "profit": 5719.61, "count": 405, "year": 2017, "month": 9}, "2017-10": {"sales": 25763.2, "profit": 2012.35, "count": 265, "year": 2017, "month": 10}, "2017-11": {"sales": 39120.63, "profit": 4191.33, "count": 396, "year": 2017, "month": 11}, "2017-12": {"sales": 37089.01, "profit": 5447.01, "count": 409, "year": 2017, "month": 12}}, "by_disc": {"0%": {"sales": 358941.48, "profit": 95298.39, "count": 4177}, "1-20%": {"sales": 403603.31, "profit": 39702.04, "count": 3471}, "21-40%": {"sales": 66622.49, "profit": -6323.01, "count": 282}, ">40%": {"sales": 15037.31, "profit": -12125.6, "count": 750}}, "top_customers": [{"name": "William Brown", "sales": 3771.09, "profit": 282.84, "orders": 11}, {"name": "James Galang", "sales": 3420.51, "profit": 385.44, "orders": 9}, {"name": "Sally Hughsby", "sales": 3406.84, "profit": 558.47, "orders": 13}, {"name": "Dan Reichenbach", "sales": 3267.75, "profit": 436.1, "orders": 8}, {"name": "Rob Lucas", "sales": 3208.07, "profit": 347.23, "orders": 8}, {"name": "Paul Prost", "sales": 3020.89, "profit": 439.96, "orders": 10}, {"name": "Stewart Carmichael", "sales": 2951.09, "profit": 227.64, "orders": 7}, {"name": "Naresj Patel", "sales": 2949.3, "profit": 631.04, "orders": 6}, {"name": "Matt Abelman", "sales": 2949.19, "profit": 715.24, "orders": 11}, {"name": "John Lee", "sales": 2941.43, "profit": 636.39, "orders": 11}], "by_ship": {"Second Class": {"sales": 169771.56, "profit": 25173.69, "count": 1686, "lead_time_sum": 5466.0}, "Standard Class": {"sales": 495531.08, "profit": 67310.83, "count": 5174, "lead_time_sum": 25934.0}, "First Class": {"sales": 134570.23, "profit": 17771.64, "count": 1355, "lead_time_sum": 2953.0}, "Same Day": {"sales": 44331.72, "profit": 6295.67, "count": 465, "lead_time_sum": 23.0}}};
+// ─── DATASET ──────────────────────────────────────────────────────────────────
+const S = {"total_sales":844204.58,"total_profit":116551.82,"total_qty":31150.0,"row_count":8680,"unique_orders":4683,"unique_customers":790,"margin":13.81,"by_cat":{"Furniture":{"sales":284015.22,"profit":17309.93,"qty":5518.0,"count":1649},"Office Supplies":{"sales":326754.89,"profit":65844.1,"qty":20715.0,"count":5609},"Technology":{"sales":233434.47,"profit":33397.8,"qty":4917.0,"count":1422}},"by_sub":{"Bookcases":{"sales":45073.25,"profit":1275.55,"qty":462.0,"count":155,"category":"Furniture"},"Labels":{"sales":9090.43,"profit":3983.56,"qty":1348.0,"count":357,"category":"Office Supplies"},"Storage":{"sales":117415.76,"profit":7346.79,"qty":2542.0,"count":736,"category":"Office Supplies"},"Furnishings":{"sales":70655.5,"profit":11918.55,"qty":3280.0,"count":913,"category":"Furniture"},"Art":{"sales":25749.92,"profit":6303.91,"qty":2985.0,"count":794,"category":"Office Supplies"},"Binders":{"sales":45904.28,"profit":6767.23,"qty":5353.0,"count":1393,"category":"Office Supplies"},"Appliances":{"sales":41618.44,"profit":8156.11,"qty":1269.0,"count":372,"category":"Office Supplies"},"Paper":{"sales":62032.99,"profit":26529.25,"qty":4876.0,"count":1323,"category":"Office Supplies"},"Phones":{"sales":134295.58,"profit":15102.41,"qty":2316.0,"count":695,"category":"Technology"},"Chairs":{"sales":126408.9,"profit":4401.6,"qty":1400.0,"count":439,"category":"Furniture"},"Accessories":{"sales":85247.16,"profit":16832.47,"qty":2474.0,"count":681,"category":"Technology"},"Envelopes":{"sales":11882.2,"profit":5002.86,"qty":832.0,"count":240,"category":"Office Supplies"},"Fasteners":{"sales":3024.28,"profit":949.52,"qty":914.0,"count":217,"category":"Office Supplies"},"Supplies":{"sales":10036.6,"profit":804.88,"qty":596.0,"count":177,"category":"Office Supplies"},"Tables":{"sales":41877.57,"profit":-285.78,"qty":376.0,"count":142,"category":"Furniture"},"Machines":{"sales":9131.9,"profit":634.95,"qty":105.0,"count":36,"category":"Technology"},"Copiers":{"sales":4759.84,"profit":827.97,"qty":22.0,"count":10,"category":"Technology"}},"by_region":{"South":{"sales":132120.74,"profit":20261.84,"count":1402},"West":{"sales":314857.3,"profit":48526.03,"count":2851},"Central":{"sales":182247.44,"profit":16345.52,"count":1993},"East":{"sales":214979.1,"profit":31418.43,"count":2434}},"by_seg":{"Consumer":{"sales":453319.62,"profit":60852.62,"count":4557},"Corporate":{"sales":247406.11,"profit":34478.4,"count":2591},"Home Office":{"sales":143478.85,"profit":21220.8,"count":1532}},"by_year":{"2014":{"sales":173108.23,"profit":23612.17,"count":1734},"2015":{"sales":181435.5,"profit":26355.31,"count":1812},"2016":{"sales":210187.78,"profit":29017.42,"count":2228},"2017":{"sales":279473.07,"profit":37566.92,"count":2906}},"by_ym":{"2014-01":{"sales":5983.22,"profit":528.51,"count":70,"year":2014,"month":1},"2014-02":{"sales":2794.77,"profit":580.62,"count":44,"year":2014,"month":2},"2014-03":{"sales":12694.55,"profit":1492.75,"count":135,"year":2014,"month":3},"2014-04":{"sales":11307.06,"profit":1990.16,"count":117,"year":2014,"month":4},"2014-05":{"sales":8761.91,"profit":1392.6,"count":103,"year":2014,"month":5},"2014-06":{"sales":10051.85,"profit":1549.58,"count":111,"year":2014,"month":6},"2014-07":{"sales":14229.38,"profit":1648.89,"count":129,"year":2014,"month":7},"2014-08":{"sales":11514.27,"profit":2106.14,"count":132,"year":2014,"month":8},"2014-09":{"sales":19692.96,"profit":3344.56,"count":228,"year":2014,"month":9},"2014-10":{"sales":17177.91,"profit":1699.92,"count":147,"year":2014,"month":10},"2014-11":{"sales":31148.22,"profit":3980.4,"count":274,"year":2014,"month":11},"2014-12":{"sales":27752.12,"profit":3298.05,"count":244,"year":2014,"month":12},"2015-01":{"sales":3989.68,"profit":662.79,"count":48,"year":2015,"month":1},"2015-02":{"sales":5291.3,"profit":715.13,"count":57,"year":2015,"month":2},"2015-03":{"sales":10342.85,"profit":1928.27,"count":117,"year":2015,"month":3},"2015-04":{"sales":12853.03,"profit":1276.65,"count":135,"year":2015,"month":4},"2015-05":{"sales":13097.7,"profit":1822.11,"count":130,"year":2015,"month":5},"2015-06":{"sales":11690.2,"profit":1850.28,"count":125,"year":2015,"month":6},"2015-07":{"sales":14673.74,"profit":2106.13,"count":121,"year":2015,"month":7},"2015-08":{"sales":13968.5,"profit":1956.7,"count":134,"year":2015,"month":8},"2015-09":{"sales":23645.17,"profit":3702.03,"count":252,"year":2015,"month":9},"2015-10":{"sales":16286.31,"profit":2241.15,"count":148,"year":2015,"month":10},"2015-11":{"sales":30384.03,"profit":3820.86,"count":275,"year":2015,"month":11},"2015-12":{"sales":25212.99,"profit":4273.24,"count":270,"year":2015,"month":12},"2016-01":{"sales":7467.36,"profit":1062.14,"count":78,"year":2016,"month":1},"2016-02":{"sales":8727.59,"profit":1182.8,"count":73,"year":2016,"month":2},"2016-03":{"sales":14498.05,"profit":1422.2,"count":132,"year":2016,"month":3},"2016-04":{"sales":13068.09,"profit":1539.32,"count":148,"year":2016,"month":4},"2016-05":{"sales":14910.67,"profit":2176.63,"count":194,"year":2016,"month":5},"2016-06":{"sales":16556.15,"profit":2568.44,"count":172,"year":2016,"month":6},"2016-07":{"sales":17414.78,"profit":2344.72,"count":177,"year":2016,"month":7},"2016-08":{"sales":15609.06,"profit":1998.88,"count":160,"year":2016,"month":8},"2016-09":{"sales":26961.6,"profit":3962.08,"count":312,"year":2016,"month":9},"2016-10":{"sales":15127.56,"profit":1920.69,"count":171,"year":2016,"month":10},"2016-11":{"sales":30229.52,"profit":4205.32,"count":322,"year":2016,"month":11},"2016-12":{"sales":29617.36,"profit":4634.2,"count":289,"year":2016,"month":12},"2017-01":{"sales":11075.02,"profit":1409.49,"count":132,"year":2017,"month":1},"2017-02":{"sales":8972.14,"profit":1329.69,"count":92,"year":2017,"month":2},"2017-03":{"sales":21280.76,"profit":3448.4,"count":207,"year":2017,"month":3},"2017-04":{"sales":17475.29,"profit":1935.09,"count":188,"year":2017,"month":4},"2017-05":{"sales":20404.68,"profit":2693.11,"count":213,"year":2017,"month":5},"2017-06":{"sales":22393.43,"profit":2708.88,"count":215,"year":2017,"month":6},"2017-07":{"sales":21127.68,"profit":3205.66,"count":199,"year":2017,"month":7},"2017-08":{"sales":19506.83,"profit":3466.31,"count":185,"year":2017,"month":8},"2017-09":{"sales":35264.4,"profit":5719.61,"count":405,"year":2017,"month":9},"2017-10":{"sales":25763.2,"profit":2012.35,"count":265,"year":2017,"month":10},"2017-11":{"sales":39120.63,"profit":4191.33,"count":396,"year":2017,"month":11},"2017-12":{"sales":37089.01,"profit":5447.01,"count":409,"year":2017,"month":12}},"by_disc":{"0%":{"sales":358941.48,"profit":95298.39,"count":4177},"1-20%":{"sales":403603.31,"profit":39702.04,"count":3471},"21-40%":{"sales":66622.49,"profit":-6323.01,"count":282},">40%":{"sales":15037.31,"profit":-12125.6,"count":750}},"top_customers":[{"name":"William Brown","sales":3771.09,"profit":282.84,"orders":11},{"name":"James Galang","sales":3420.51,"profit":385.44,"orders":9},{"name":"Sally Hughsby","sales":3406.84,"profit":558.47,"orders":13},{"name":"Dan Reichenbach","sales":3267.75,"profit":436.1,"orders":8},{"name":"Rob Lucas","sales":3208.07,"profit":347.23,"orders":8},{"name":"Paul Prost","sales":3020.89,"profit":439.96,"orders":10},{"name":"Stewart Carmichael","sales":2951.09,"profit":227.64,"orders":7},{"name":"Naresj Patel","sales":2949.3,"profit":631.04,"orders":6},{"name":"Matt Abelman","sales":2949.19,"profit":715.24,"orders":11},{"name":"John Lee","sales":2941.43,"profit":636.39,"orders":11}],"by_ship":{"Second Class":{"sales":169771.56,"profit":25173.69,"count":1686,"lead_time_sum":5466.0},"Standard Class":{"sales":495531.08,"profit":67310.83,"count":5174,"lead_time_sum":25934.0},"First Class":{"sales":134570.23,"profit":17771.64,"count":1355,"lead_time_sum":2953.0},"Same Day":{"sales":44331.72,"profit":6295.67,"count":465,"lead_time_sum":23.0}}};
 const OBY = {"2014":{"orders":912,"customers":572},"2015":{"orders":971,"customers":555},"2016":{"orders":1218,"customers":618},"2017":{"orders":1582,"customers":677}};
 
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
 function fmt(n,t){
   if(!t||t==='$') return '$'+n.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0});
-  if(t==='%') return n.toFixed(1)+'%';
+  if(t==='%') return n.toFixed(2)+'%';
   if(t==='n') return n.toLocaleString('en-US',{maximumFractionDigits:0});
   return String(n);
 }
+function getAK(){return document.getElementById('ak').value.trim();}
 
-var SYSPROMPT = 'Eres analista de datos senior. Genera un reporte ejecutivo en JSON para la tesis sobre Sample Superstore (retail EE.UU. 2014-2017). RESPONDE SOLO CON JSON VALIDO sin texto extra ni backticks. Estructura requerida: {"report_subtitle":"string","kpi_narrative":"2 oraciones ejecutivas sobre lo solicitado","kpis":{"ventas":"$XXX","ganancia":"$XXX","margen":"XX%","ticket":"$XXX","pedidos":"X,XXX","clientes":"XXX","unidades":"XX,XXX","lead_time":"X.XX d"},"sections":[{"priority":"CRITICO","num":2,"title":"string","chart_id":"chart_tendencia","insight":"HTML con <strong>. Minimo 3 oraciones con cifras reales."}]}. REGLAS CRITICAS: (1) Si el usuario pide UN solo indicador o tema especifico, genera EXACTAMENTE 1 seccion enfocada en eso. (2) Si pide 2-3 temas, genera solo esas secciones. (3) Si pide reporte completo o general, genera 5 secciones. (4) NUNCA generes mas secciones de las que el usuario pidio. (5) kpis = cifras del periodo solicitado (si pide 2017 usar solo datos de 2017, si pide general usar totales). (6) chart_id validos: chart_tendencia, chart_mensual, chart_cat, chart_region, chart_sub, chart_seg, chart_orders, chart_ship, chart_descuento. (7) priority: CRITICO, ALTO o MEDIO. (8) Adapta el chart_id al tema pedido: ventas/crecimiento->chart_tendencia, estacionalidad->chart_mensual, categorias->chart_cat, regiones->chart_region, subcategorias->chart_sub, segmentos->chart_seg, clientes->chart_orders, envio->chart_ship, descuentos->chart_descuento.';
+// ─── TABS ─────────────────────────────────────────────────────────────────────
+function switchTab(t){
+  document.querySelectorAll('.tab').forEach(function(b,i){b.classList.toggle('active',['consulta','reporte'][i]===t);});
+  document.querySelectorAll('.tab-panel').forEach(function(p,i){p.classList.toggle('active',['tab-consulta','tab-reporte'][i]==='tab-'+t);});
+}
 
-async function gen(){
-  var prompt = document.getElementById('up').value.trim();
-  var ak = document.getElementById('ak').value.trim();
-  if(!prompt) return showErr('Escribe un prompt.');
-  if(!ak||!ak.startsWith('sk-')) return showErr('API Key invalida. Debe empezar con sk-');
+// ─── CONSULTA RÁPIDA ──────────────────────────────────────────────────────────
+var SYSPROMPT_ASK = `Eres analista de datos senior especializado en el dataset "Sample Superstore 2014-2017" (retail EE.UU.).
+Recibirás el dataset completo en JSON y una pregunta del usuario.
+RESPONDE SOLO CON JSON VÁLIDO, sin texto extra ni backticks.
 
-  // Validar años mencionados en el prompt
-  var yearsInPrompt = prompt.match(/\b(20\d{2})\b/g);
-  if(yearsInPrompt) {
-    var validYears = ['2014','2015','2016','2017'];
-    var invalidYears = yearsInPrompt.filter(function(y){ return !validYears.includes(y); });
-    if(invalidYears.length > 0) {
-      return showErr('El dataset solo contiene datos de 2014, 2015, 2016 y 2017. El año ' + invalidYears.join(', ') + ' no existe en el dataset.');
-    }
+Estructura de respuesta:
+{
+  "titulo": "Título breve de la respuesta (máx 8 palabras)",
+  "resumen": "2-3 oraciones ejecutivas respondiendo directamente la pregunta con cifras exactas del dataset.",
+  "tiene_tabla": true/false,
+  "tabla": {
+    "headers": ["Col1","Col2","Col3"],
+    "tipos": ["texto","$","$","%"],  // tipos por columna: "texto","$","%","n","rank"
+    "rows": [["valor","1234.56","567.89","12.34"], ...],
+    "positivo_col": 1,  // índice de columna a colorear positivo/negativo (opcional, -1 si no aplica)
+    "caption": "Descripción breve de la tabla"
+  },
+  "conclusiones": ["Conclusión 1 con cifra.", "Conclusión 2 con cifra.", "Conclusión 3 con cifra."]
+}
+
+REGLAS:
+- Usa SIEMPRE cifras exactas del dataset provisto.
+- Si la pregunta involucra un año específico (ej. 2017), filtra solo ese año de by_ym.
+- Para "top N", ordena correctamente y limita a N filas.
+- Para "más bajo" o "mínimo", ordena ascendente.
+- Para "pérdidas", filtra profit < 0.
+- Para subcategorías por año: escala usando la proporción del año sobre el total.
+- Si la pregunta no requiere tabla (ej. comparación simple), pon tiene_tabla: false y tabla: null.
+- conclusiones: exactamente 3 puntos con cifras.`;
+
+async function ask(){
+  var q = document.getElementById('qp').value.trim();
+  var ak = getAK();
+  if(!q) return showQErr('Escribe una pregunta.');
+  if(!ak||!ak.startsWith('sk-')) return showQErr('API Key inválida. Debe empezar con sk-');
+
+  // Validar años
+  var yrs = q.match(/\b(20\d{2})\b/g);
+  if(yrs){
+    var invalid = yrs.filter(function(y){return !['2014','2015','2016','2017'].includes(y);});
+    if(invalid.length) return showQErr('El dataset solo contiene 2014–2017. Año inválido: '+invalid.join(', '));
   }
 
-  setSt(true,'Consultando Claude...');
-  hideErr();
+  setQSt(true,'Analizando datos...');
+  hideQErr();
 
-  var ctx = [
-    'DATASET: Sample Superstore 2014-2017 | 8680 registros',
-    'GLOBAL: Ventas=$844K Profit=$117K Margen=13.81% Ordenes=4683 Clientes=790 Ticket=$180 LeadTime=3.96d Unidades=31150',
-    'ANUAL: 2014=$173K/+$23.6K/912ped/572cli | 2015=$181K/+$26.4K/971ped/555cli | 2016=$210K/+$29K/1218ped/618cli | 2017=$279K/+$37.6K/1582ped/677cli',
-    'CATS: OfficeSupplies=$327K/marg20.2% | Furniture=$284K/marg6.1% | Technology=$233K/marg14.3%',
-    'REGIONES: West=$315K/15.4% | East=$215K/14.6% | Central=$182K/9.0% | South=$132K/15.3%',
-    'SEGS: Consumer=53.7%/$453K | Corporate=29.3%/$247K | HomeOffice=17%/$143K',
-    'SUBCATS: Paper=$26.5K | Accessories=$16.8K | Phones=$15.1K | Furnishings=$11.9K | Appliances=$8.2K | Tables=-$286(perdida)',
-    'DESCUENTOS: 0%->marg26.6% | 1-20%->marg9.8% | 21-40%->marg-9.5% | >40%->marg-80.6%',
-    'ENVIO: Standard=59.6% | Second=19.4% | First=15.6% | SameDay=5.4%',
-    'ESTACIONAL: picos Nov/Dic/Sep, valles Ene/Feb. Maximo: Nov2017=$39K'
-  ].join('\n');
+  // Contexto completo del dataset
+  var ctx = 'DATASET COMPLETO:\n'+JSON.stringify({
+    global:{sales:S.total_sales,profit:S.total_profit,qty:S.total_qty,orders:S.unique_orders,customers:S.unique_customers,margin:S.margin},
+    by_year:S.by_year,
+    by_ym:S.by_ym,
+    by_cat:S.by_cat,
+    by_sub:S.by_sub,
+    by_region:S.by_region,
+    by_seg:S.by_seg,
+    by_disc:S.by_disc,
+    by_ship:S.by_ship,
+    top_customers:S.top_customers,
+    orders_by_year:OBY
+  });
 
-  var msg = 'DATOS:\n'+ctx+'\n\nSOLICITUD: '+prompt+'\n\nGenera el JSON del reporte.';
+  var msg = ctx + '\n\nPREGUNTA: ' + q + '\n\nResponde con JSON.';
 
   try{
     var res = await fetch('https://api.anthropic.com/v1/messages',{
@@ -184,164 +298,230 @@ async function gen(){
         'anthropic-dangerous-direct-browser-access':'true'
       },
       body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:4000,
-        system:SYSPROMPT,
+        model:'claude-sonnet-4-6',
+        max_tokens:2000,
+        system:SYSPROMPT_ASK,
         messages:[{role:'user',content:msg}]
       })
     });
-    if(!res.ok){var err=await res.json();throw new Error(err.error?err.error.message:'HTTP '+res.status);}
+    if(!res.ok){var e=await res.json();throw new Error(e.error?e.error.message:'HTTP '+res.status);}
     var data=await res.json();
     var raw=data.content.filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('');
     var clean=raw.replace(/```json/g,'').replace(/```/g,'').trim();
     var parsed;
     try{parsed=JSON.parse(clean);}
-    catch(ex){throw new Error('JSON invalido recibido: '+clean.slice(0,200));}
-    setSt(false);
-    // Extraer años del prompt para filtrar gráficas
-    var yrsFound = prompt.match(/\b(2014|2015|2016|2017)\b/g)||[];
-    var uniqueYrs = yrsFound.filter(function(v,i,a){return a.indexOf(v)===i;});
-    renderReport(parsed, uniqueYrs);
+    catch(ex){throw new Error('JSON inválido recibido.');}
+    setQSt(false);
+    renderAnswer(parsed, q);
   }catch(err){
-    setSt(false);
-    showErr('Error: '+err.message);
+    setQSt(false);
+    showQErr('Error: '+err.message);
   }
 }
 
+var qHistory = [];
+
+function renderAnswer(d, q){
+  qHistory.unshift({q:q,d:d});
+  if(qHistory.length>5) qHistory.pop();
+
+  var h='';
+  h+='<div class="q-answer-box">';
+  h+='<div class="q-answer-hd"><span>'+d.titulo+'</span><small>'+new Date().toLocaleTimeString('es-CO')+'</small></div>';
+  h+='<div class="q-answer-body">';
+
+  // Resumen
+  h+='<p>'+d.resumen+'</p>';
+
+  // Tabla
+  if(d.tiene_tabla && d.tabla){
+    var t=d.tabla;
+    h+='<h3>'+t.caption+'</h3>';
+    h+='<table class="q-tbl"><thead><tr>';
+    t.headers.forEach(function(hd,i){h+='<th>'+hd+'</th>';});
+    h+='</tr></thead><tbody>';
+    t.rows.forEach(function(row,ri){
+      h+='<tr>';
+      row.forEach(function(cell,ci){
+        var tipo = (t.tipos&&t.tipos[ci])||'texto';
+        var cls='';
+        var val=cell;
+        if(tipo==='$'){
+          var num=parseFloat(String(cell).replace(/[^0-9.\-]/g,''));
+          cls='num';
+          if(t.positivo_col===ci) cls+= num<0?' neg':' pos';
+          val=isNaN(num)?cell:fmt(num);
+        } else if(tipo==='%'){
+          var num=parseFloat(String(cell).replace(/[^0-9.\-]/g,''));
+          cls='num';
+          if(t.positivo_col===ci) cls+= num<0?' neg':' pos';
+          val=isNaN(num)?cell:num.toFixed(1)+'%';
+        } else if(tipo==='n'){
+          var num=parseFloat(String(cell).replace(/[^0-9.\-]/g,''));
+          cls='num';
+          val=isNaN(num)?cell:fmt(num,'n');
+        } else if(tipo==='rank'){
+          cls='rank';
+          val='#'+cell;
+        }
+        h+='<td class="'+cls.trim()+'">'+val+'</td>';
+      });
+      h+='</tr>';
+    });
+    h+='</tbody></table>';
+  }
+
+  // Conclusiones
+  if(d.conclusiones && d.conclusiones.length){
+    h+='<h3>Conclusiones clave</h3><ul style="list-style:disc;padding-left:20px;margin-top:4px">';
+    d.conclusiones.forEach(function(c){h+='<li style="margin-bottom:5px;font-size:12.5px;color:#1e293b">'+c+'</li>';});
+    h+='</ul>';
+  }
+
+  h+='</div>';
+  h+='<div class="q-source">Fuente: Sample Superstore 2014–2017 · 8,680 registros · Pregunta: "'+q+'"</div>';
+  h+='</div>';
+
+  // Historial
+  if(qHistory.length>1){
+    h+='<div style="margin-top:8px"><div class="lbl" style="margin-bottom:6px">Consultas anteriores</div><div class="q-hist">';
+    qHistory.slice(1).forEach(function(it,i){
+      h+='<button class="q-hist-btn" onclick="reloadQ('+i+')">'+(it.q.length>50?it.q.slice(0,47)+'…':it.q)+'</button>';
+    });
+    h+='</div></div>';
+  }
+
+  var qrw=document.getElementById('qrw');
+  qrw.innerHTML=h;
+  qrw.classList.add('vis');
+  qrw.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function reloadQ(idx){
+  var it=qHistory[idx+1];
+  document.getElementById('qp').value=it.q;
+  renderAnswer(it.d,it.q);
+}
+
+function setQSt(v,t){
+  var sb=document.getElementById('qsb'),st=document.getElementById('qst');
+  if(v){sb.classList.add('vis');st.textContent=t;document.getElementById('bq').disabled=true;}
+  else{sb.classList.remove('vis');document.getElementById('bq').disabled=false;}
+}
+function showQErr(m){var e=document.getElementById('qeb');e.textContent=m;e.classList.add('vis');}
+function hideQErr(){document.getElementById('qeb').classList.remove('vis');}
+function hq(el){document.getElementById('qp').value=el.textContent.trim();}
+
+// ─── REPORTE COMPLETO ─────────────────────────────────────────────────────────
+var SYSPROMPT = 'Eres analista de datos senior. Genera un reporte ejecutivo en JSON para la tesis sobre Sample Superstore (retail EE.UU. 2014-2017). RESPONDE SOLO CON JSON VALIDO sin texto extra ni backticks. Estructura requerida: {"report_subtitle":"string","kpi_narrative":"2 oraciones ejecutivas sobre lo solicitado","kpis":{"ventas":"$XXX","ganancia":"$XXX","margen":"XX%","ticket":"$XXX","pedidos":"X,XXX","clientes":"XXX","unidades":"XX,XXX","lead_time":"X.XX d"},"sections":[{"priority":"CRITICO","num":2,"title":"string","chart_id":"chart_tendencia","insight":"HTML con <strong>. Minimo 3 oraciones con cifras reales."}]}. REGLAS CRITICAS: (1) Si el usuario pide UN solo indicador o tema especifico, genera EXACTAMENTE 1 seccion enfocada en eso. (2) Si pide 2-3 temas, genera solo esas secciones. (3) Si pide reporte completo o general, genera 5 secciones. (4) NUNCA generes mas secciones de las que el usuario pidio. (5) kpis = cifras del periodo solicitado (si pide 2017 usar solo datos de 2017, si pide general usar totales). (6) chart_id validos: chart_tendencia, chart_mensual, chart_cat, chart_region, chart_sub, chart_seg, chart_orders, chart_ship, chart_descuento. (7) priority: CRITICO, ALTO o MEDIO. (8) Adapta el chart_id al tema pedido: ventas/crecimiento->chart_tendencia, estacionalidad->chart_mensual, categorias->chart_cat, regiones->chart_region, subcategorias->chart_sub, segmentos->chart_seg, clientes->chart_orders, envio->chart_ship, descuentos->chart_descuento.';
+
+async function gen(){
+  var prompt=document.getElementById('up').value.trim();
+  var ak=getAK();
+  if(!prompt) return showErr('Escribe un prompt.');
+  if(!ak||!ak.startsWith('sk-')) return showErr('API Key inválida. Debe empezar con sk-');
+  var yrs=prompt.match(/\b(20\d{2})\b/g);
+  if(yrs){
+    var inv=yrs.filter(function(y){return!['2014','2015','2016','2017'].includes(y);});
+    if(inv.length) return showErr('El dataset solo contiene datos de 2014–2017. Año inválido: '+inv.join(', '));
+  }
+  setSt(true,'Consultando Claude...');
+  hideErr();
+  var ctx=['DATASET: Sample Superstore 2014-2017 | 8680 registros','GLOBAL: Ventas=$844K Profit=$117K Margen=13.81% Ordenes=4683 Clientes=790 Ticket=$180 LeadTime=3.96d Unidades=31150','ANUAL: 2014=$173K/+$23.6K/912ped/572cli | 2015=$181K/+$26.4K/971ped/555cli | 2016=$210K/+$29K/1218ped/618cli | 2017=$279K/+$37.6K/1582ped/677cli','CATS: OfficeSupplies=$327K/marg20.2% | Furniture=$284K/marg6.1% | Technology=$233K/marg14.3%','REGIONES: West=$315K/15.4% | East=$215K/14.6% | Central=$182K/9.0% | South=$132K/15.3%','SEGS: Consumer=53.7%/$453K | Corporate=29.3%/$247K | HomeOffice=17%/$143K','SUBCATS: Paper=$26.5K | Accessories=$16.8K | Phones=$15.1K | Furnishings=$11.9K | Appliances=$8.2K | Tables=-$286(perdida)','DESCUENTOS: 0%->marg26.6% | 1-20%->marg9.8% | 21-40%->marg-9.5% | >40%->marg-80.6%','ENVIO: Standard=59.6% | Second=19.4% | First=15.6% | SameDay=5.4%','ESTACIONAL: picos Nov/Dic/Sep, valles Ene/Feb. Maximo: Nov2017=$39K'].join('\n');
+  var msg='DATOS:\n'+ctx+'\n\nSOLICITUD: '+prompt+'\n\nGenera el JSON del reporte.';
+  try{
+    var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':ak,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:4000,system:SYSPROMPT,messages:[{role:'user',content:msg}]})});
+    if(!res.ok){var e=await res.json();throw new Error(e.error?e.error.message:'HTTP '+res.status);}
+    var data=await res.json();
+    var raw=data.content.filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('');
+    var clean=raw.replace(/```json/g,'').replace(/```/g,'').trim();
+    var parsed;
+    try{parsed=JSON.parse(clean);}catch(ex){throw new Error('JSON inválido recibido.');}
+    setSt(false);
+    var yrsF=prompt.match(/\b(2014|2015|2016|2017)\b/g)||[];
+    renderReport(parsed,yrsF.filter(function(v,i,a){return a.indexOf(v)===i;}));
+  }catch(err){setSt(false);showErr('Error: '+err.message);}
+}
+
+// ─── CHARTS ───────────────────────────────────────────────────────────────────
 var charts={};
 function killCharts(){Object.values(charts).forEach(function(c){try{c.destroy();}catch(e){}});charts={};}
 var gx={grid:{color:'#f1f5f9'},ticks:{font:{size:10}}};
 var gy={grid:{color:'#f1f5f9'},ticks:{font:{size:10},callback:function(v){return fmt(v);}}};
 var TT={backgroundColor:'white',borderColor:'#e2e8f0',borderWidth:1,titleColor:'#0f172a',bodyColor:'#475569',padding:10};
-
 function mkC(id,cfg){var cv=document.getElementById(id);if(!cv)return;charts[id]=new Chart(cv,cfg);}
 
-// Detectar año(s) del prompt actual
-var ACTIVE_YEARS = ['2014','2015','2016','2017']; // se actualiza antes de renderizar
-
-function filterByYears(years) {
-  // Filtra S para devolver datos solo del/los años solicitados
-  var all = ['2014','2015','2016','2017'];
-  var yrs = years.length ? years : all;
-
-  // by_year filtrado
-  var byYear = {};
-  yrs.forEach(function(y){ if(S.by_year[y]) byYear[y] = S.by_year[y]; });
-
-  // by_ym filtrado
-  var byYm = {};
-  Object.entries(S.by_ym).forEach(function(e){
-    if(yrs.includes(e[0].split('-')[0])) byYm[e[0]] = e[1];
-  });
-
-  // OBY filtrado
-  var oby = {};
-  yrs.forEach(function(y){ if(OBY[y]) oby[y] = OBY[y]; });
-
-  // Para cat/region/seg/sub/disc/ship: si es año específico, escalar proporcionalmente
-  // usando el peso del año sobre el total
-  var totalSales = Object.values(byYear).reduce(function(a,v){return a+v.sales;},0);
-  var globalSales = S.total_sales;
-  var ratio = globalSales > 0 ? totalSales / globalSales : 1;
-
-  var byCat = {};
-  Object.entries(S.by_cat).forEach(function(e){
-    byCat[e[0]] = {sales: e[1].sales*ratio, profit: e[1].profit*ratio};
-  });
-  var byRegion = {};
-  Object.entries(S.by_region).forEach(function(e){
-    byRegion[e[0]] = {sales: e[1].sales*ratio, profit: e[1].profit*ratio};
-  });
-  var bySeg = {};
-  Object.entries(S.by_seg).forEach(function(e){
-    bySeg[e[0]] = {sales: e[1].sales*ratio, profit: e[1].profit*ratio};
-  });
-  var bySub = {};
-  Object.entries(S.by_sub).forEach(function(e){
-    bySub[e[0]] = {sales: e[1].sales*ratio, profit: e[1].profit*ratio};
-  });
-
-  return {by_year: byYear, by_ym: byYm, oby: oby,
-          by_cat: byCat, by_region: byRegion, by_seg: bySeg, by_sub: bySub,
-          by_disc: S.by_disc, by_ship: S.by_ship};
+function filterByYears(years){
+  var all=['2014','2015','2016','2017'];
+  var yrs=years.length?years:all;
+  var byYear={};yrs.forEach(function(y){if(S.by_year[y])byYear[y]=S.by_year[y];});
+  var byYm={};Object.entries(S.by_ym).forEach(function(e){if(yrs.includes(e[0].split('-')[0]))byYm[e[0]]=e[1];});
+  var oby={};yrs.forEach(function(y){if(OBY[y])oby[y]=OBY[y];});
+  var totalSales=Object.values(byYear).reduce(function(a,v){return a+v.sales;},0);
+  var ratio=S.total_sales>0?totalSales/S.total_sales:1;
+  var byCat={};Object.entries(S.by_cat).forEach(function(e){byCat[e[0]]={sales:e[1].sales*ratio,profit:e[1].profit*ratio};});
+  var byRegion={};Object.entries(S.by_region).forEach(function(e){byRegion[e[0]]={sales:e[1].sales*ratio,profit:e[1].profit*ratio};});
+  var bySeg={};Object.entries(S.by_seg).forEach(function(e){bySeg[e[0]]={sales:e[1].sales*ratio,profit:e[1].profit*ratio};});
+  var bySub={};Object.entries(S.by_sub).forEach(function(e){bySub[e[0]]={sales:e[1].sales*ratio,profit:e[1].profit*ratio};});
+  return{by_year:byYear,by_ym:byYm,oby:oby,by_cat:byCat,by_region:byRegion,by_seg:bySeg,by_sub:bySub,by_disc:S.by_disc,by_ship:S.by_ship};
 }
 
-function buildCharts(sections, filteredData) {
-  var D = filteredData;
+function buildCharts(sections,filteredData){
+  var D=filteredData;
   sections.forEach(function(sec){
-    var id = sec.chart_id;
-
+    var id=sec.chart_id;
     if(id==='chart_tendencia'){
-      var yrs = Object.keys(D.by_year);
-      // Si es 1 solo año, mostrar meses de ese año como línea
-      if(yrs.length === 1) {
-        var mths = Object.entries(D.by_ym).sort(function(a,b){return a[0]<b[0]?-1:1;});
-        var sv = mths.map(function(m){return m[1].sales;});
-        var pv = mths.map(function(m){return m[1].profit;});
-        var lbls = mths.map(function(m){return m[0].slice(5);}); // solo MM
-        mkC(id,{type:'line',data:{labels:lbls,datasets:[
-          {label:'Ventas',data:sv,borderColor:'#2563eb',backgroundColor:'rgba(37,99,235,.08)',fill:true,tension:.4,yAxisID:'y',pointRadius:4,pointBackgroundColor:'#2563eb'},
-          {label:'Ganancia',data:pv,borderColor:'#16a34a',backgroundColor:'rgba(22,163,74,.08)',fill:true,tension:.4,yAxisID:'y2',pointRadius:4,pointBackgroundColor:'#16a34a',borderDash:[6,3]}
-        ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top'},tooltip:Object.assign({},TT,{callbacks:{label:function(c){return ' '+fmt(c.raw);}}})},scales:{y:Object.assign({},gy,{position:'left'}),y2:Object.assign({},gy,{position:'right',grid:{display:false}})}}});
-      } else {
-        mkC(id,{type:'line',data:{labels:yrs,datasets:[
-          {label:'Ventas',data:yrs.map(function(y){return D.by_year[y].sales;}),borderColor:'#2563eb',backgroundColor:'rgba(37,99,235,.08)',fill:true,tension:.4,yAxisID:'y',pointRadius:5,pointBackgroundColor:'#2563eb'},
-          {label:'Ganancia',data:yrs.map(function(y){return D.by_year[y].profit;}),borderColor:'#16a34a',backgroundColor:'rgba(22,163,74,.08)',fill:true,tension:.4,yAxisID:'y2',pointRadius:5,pointBackgroundColor:'#16a34a',borderDash:[6,3]}
-        ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top'},tooltip:Object.assign({},TT,{callbacks:{label:function(c){return ' '+fmt(c.raw);}}})},scales:{y:Object.assign({},gy,{position:'left'}),y2:Object.assign({},gy,{position:'right',grid:{display:false}})}}});
+      var yrs=Object.keys(D.by_year);
+      if(yrs.length===1){
+        var mths=Object.entries(D.by_ym).sort(function(a,b){return a[0]<b[0]?-1:1;});
+        mkC(id,{type:'line',data:{labels:mths.map(function(m){return m[0].slice(5);}),datasets:[{label:'Ventas',data:mths.map(function(m){return m[1].sales;}),borderColor:'#2563eb',backgroundColor:'rgba(37,99,235,.08)',fill:true,tension:.4,yAxisID:'y',pointRadius:4,pointBackgroundColor:'#2563eb'},{label:'Ganancia',data:mths.map(function(m){return m[1].profit;}),borderColor:'#16a34a',backgroundColor:'rgba(22,163,74,.08)',fill:true,tension:.4,yAxisID:'y2',pointRadius:4,pointBackgroundColor:'#16a34a',borderDash:[6,3]}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top'},tooltip:Object.assign({},TT,{callbacks:{label:function(c){return' '+fmt(c.raw);}}})},scales:{y:Object.assign({},gy,{position:'left'}),y2:Object.assign({},gy,{position:'right',grid:{display:false}})}}});
+      }else{
+        mkC(id,{type:'line',data:{labels:yrs,datasets:[{label:'Ventas',data:yrs.map(function(y){return D.by_year[y].sales;}),borderColor:'#2563eb',backgroundColor:'rgba(37,99,235,.08)',fill:true,tension:.4,yAxisID:'y',pointRadius:5,pointBackgroundColor:'#2563eb'},{label:'Ganancia',data:yrs.map(function(y){return D.by_year[y].profit;}),borderColor:'#16a34a',backgroundColor:'rgba(22,163,74,.08)',fill:true,tension:.4,yAxisID:'y2',pointRadius:5,pointBackgroundColor:'#16a34a',borderDash:[6,3]}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top'},tooltip:Object.assign({},TT,{callbacks:{label:function(c){return' '+fmt(c.raw);}}})},scales:{y:Object.assign({},gy,{position:'left'}),y2:Object.assign({},gy,{position:'right',grid:{display:false}})}}});
       }
-
-    } else if(id==='chart_mensual'){
+    }else if(id==='chart_mensual'){
       var mths=Object.entries(D.by_ym).sort(function(a,b){return a[0]<b[0]?-1:1;});
       var vals=mths.map(function(m){return m[1].sales;});
       var top3=vals.map(function(v,i){return{v:v,i:i};}).sort(function(a,b){return b.v-a.v;}).slice(0,3).map(function(x){return x.i;});
-      mkC(id,{type:'line',data:{labels:mths.map(function(m){return m[0];}),datasets:[{label:'Ventas',data:vals,borderColor:'#2563eb',pointBackgroundColor:vals.map(function(_,i){return top3.includes(i)?'#dc2626':'#2563eb';}),pointRadius:vals.map(function(_,i){return top3.includes(i)?6:2;}),fill:false,tension:.35}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:Object.assign({},TT,{callbacks:{label:function(c){return ' '+fmt(c.raw);}}})},scales:{x:Object.assign({},gx,{ticks:{maxTicksLimit:12,font:{size:9}}}),y:gy}}});
-
-    } else if(id==='chart_cat'){
+      mkC(id,{type:'line',data:{labels:mths.map(function(m){return m[0];}),datasets:[{label:'Ventas',data:vals,borderColor:'#2563eb',pointBackgroundColor:vals.map(function(_,i){return top3.includes(i)?'#dc2626':'#2563eb';}),pointRadius:vals.map(function(_,i){return top3.includes(i)?6:2;}),fill:false,tension:.35}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:Object.assign({},TT,{callbacks:{label:function(c){return' '+fmt(c.raw);}}})},scales:{x:Object.assign({},gx,{ticks:{maxTicksLimit:12,font:{size:9}}}),y:gy}}});
+    }else if(id==='chart_cat'){
       var cats=Object.keys(D.by_cat);
-      mkC(id,{type:'bar',data:{labels:cats,datasets:[{label:'Ventas',data:cats.map(function(c){return D.by_cat[c].sales;}),backgroundColor:'rgba(37,99,235,.8)',borderRadius:4,borderSkipped:false},{label:'Ganancia',data:cats.map(function(c){return D.by_cat[c].profit;}),backgroundColor:'rgba(22,163,74,.8)',borderRadius:4,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom'},tooltip:Object.assign({},TT,{callbacks:{label:function(c){return ' '+fmt(c.raw);}}})},scales:{x:Object.assign({},gx,{ticks:{callback:function(v){return fmt(v);}}}),y:gx}}});
-
-    } else if(id==='chart_region'){
+      mkC(id,{type:'bar',data:{labels:cats,datasets:[{label:'Ventas',data:cats.map(function(c){return D.by_cat[c].sales;}),backgroundColor:'rgba(37,99,235,.8)',borderRadius:4,borderSkipped:false},{label:'Ganancia',data:cats.map(function(c){return D.by_cat[c].profit;}),backgroundColor:'rgba(22,163,74,.8)',borderRadius:4,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom'},tooltip:Object.assign({},TT,{callbacks:{label:function(c){return' '+fmt(c.raw);}}})},scales:{x:Object.assign({},gx,{ticks:{callback:function(v){return fmt(v);}}}),y:gx}}});
+    }else if(id==='chart_region'){
       var regs=Object.keys(D.by_region);
-      mkC(id,{type:'bar',data:{labels:regs,datasets:[{label:'Ventas',data:regs.map(function(r){return D.by_region[r].sales;}),backgroundColor:'rgba(37,99,235,.8)',borderRadius:4,borderSkipped:false},{label:'Ganancia',data:regs.map(function(r){return D.by_region[r].profit;}),backgroundColor:'rgba(22,163,74,.8)',borderRadius:4,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom'},tooltip:Object.assign({},TT,{callbacks:{label:function(c){return ' '+fmt(c.raw);}}})},scales:{x:Object.assign({},gx,{ticks:{callback:function(v){return fmt(v);}}}),y:gx}}});
-
-    } else if(id==='chart_sub'){
+      mkC(id,{type:'bar',data:{labels:regs,datasets:[{label:'Ventas',data:regs.map(function(r){return D.by_region[r].sales;}),backgroundColor:'rgba(37,99,235,.8)',borderRadius:4,borderSkipped:false},{label:'Ganancia',data:regs.map(function(r){return D.by_region[r].profit;}),backgroundColor:'rgba(22,163,74,.8)',borderRadius:4,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom'},tooltip:Object.assign({},TT,{callbacks:{label:function(c){return' '+fmt(c.raw);}}})},scales:{x:Object.assign({},gx,{ticks:{callback:function(v){return fmt(v);}}}),y:gx}}});
+    }else if(id==='chart_sub'){
       var subs=Object.entries(D.by_sub).sort(function(a,b){return b[1].profit-a[1].profit;});
-      mkC(id,{type:'bar',data:{labels:subs.map(function(s){return s[0];}),datasets:[{label:'Ganancia',data:subs.map(function(s){return s[1].profit;}),backgroundColor:subs.map(function(s){return s[1].profit>2000?'rgba(22,163,74,.8)':s[1].profit>0?'rgba(217,119,6,.8)':'rgba(220,38,38,.8)';}),borderRadius:4,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:Object.assign({},TT,{callbacks:{label:function(c){return ' '+fmt(c.raw);}}})},scales:{x:Object.assign({},gx,{ticks:{callback:function(v){return fmt(v);}}}),y:Object.assign({},gx,{ticks:{font:{size:10}}})}}});
-
-    } else if(id==='chart_seg'){
+      mkC(id,{type:'bar',data:{labels:subs.map(function(s){return s[0];}),datasets:[{label:'Ganancia',data:subs.map(function(s){return s[1].profit;}),backgroundColor:subs.map(function(s){return s[1].profit>2000?'rgba(22,163,74,.8)':s[1].profit>0?'rgba(217,119,6,.8)':'rgba(220,38,38,.8)';}),borderRadius:4,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:Object.assign({},TT,{callbacks:{label:function(c){return' '+fmt(c.raw);}}})},scales:{x:Object.assign({},gx,{ticks:{callback:function(v){return fmt(v);}}}),y:Object.assign({},gx,{ticks:{font:{size:10}}})}}});
+    }else if(id==='chart_seg'){
       var segs=Object.keys(D.by_seg);
       var tot=segs.reduce(function(a,k){return a+D.by_seg[k].sales;},0);
-      mkC(id,{type:'doughnut',data:{labels:segs.map(function(k){return k+': '+fmt(D.by_seg[k].sales)+' ('+(tot>0?(D.by_seg[k].sales/tot*100).toFixed(1):0)+'%)';}),datasets:[{data:segs.map(function(k){return D.by_seg[k].sales;}),backgroundColor:['#1e3a5f','#2563eb','#93c5fd'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'right',labels:{font:{size:11},padding:12}},tooltip:Object.assign({},TT,{callbacks:{label:function(c){return ' '+fmt(c.raw);}}})}}});
-
-    } else if(id==='chart_orders'){
+      mkC(id,{type:'doughnut',data:{labels:segs.map(function(k){return k+': '+fmt(D.by_seg[k].sales)+' ('+(tot>0?(D.by_seg[k].sales/tot*100).toFixed(1):0)+'%)';}),datasets:[{data:segs.map(function(k){return D.by_seg[k].sales;}),backgroundColor:['#1e3a5f','#2563eb','#93c5fd'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'right',labels:{font:{size:11},padding:12}},tooltip:Object.assign({},TT,{callbacks:{label:function(c){return' '+fmt(c.raw);}}})}}});
+    }else if(id==='chart_orders'){
       var yrs2=Object.keys(D.oby);
       mkC(id,{type:'bar',data:{labels:yrs2,datasets:[{label:'Pedidos',data:yrs2.map(function(y){return D.oby[y].orders;}),backgroundColor:'rgba(30,58,95,.85)',borderRadius:4,borderSkipped:false,yAxisID:'y'},{label:'Clientes',data:yrs2.map(function(y){return D.oby[y].customers;}),backgroundColor:'rgba(147,197,253,.85)',borderRadius:4,borderSkipped:false,yAxisID:'y2'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top'},tooltip:TT},scales:{y:Object.assign({},gy,{position:'left'}),y2:{position:'right',grid:{display:false},ticks:{font:{size:10}}}}}});
-
-    } else if(id==='chart_ship'){
+    }else if(id==='chart_ship'){
       var modes=Object.keys(S.by_ship);
       var totS=modes.reduce(function(a,k){return a+S.by_ship[k].count;},0);
-      mkC(id,{type:'bar',data:{labels:modes,datasets:[{label:'% pedidos',data:modes.map(function(k){return +(S.by_ship[k].count/totS*100).toFixed(1);}),backgroundColor:'rgba(37,99,235,.8)',borderRadius:4,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:Object.assign({},TT,{callbacks:{label:function(c){return ' '+c.raw+'%';}}})},scales:{x:Object.assign({},gx,{ticks:{callback:function(v){return v+'%';}},max:70}),y:gx}}});
-
-    } else if(id==='chart_descuento'){
+      mkC(id,{type:'bar',data:{labels:modes,datasets:[{label:'% pedidos',data:modes.map(function(k){return+(S.by_ship[k].count/totS*100).toFixed(1);}),backgroundColor:'rgba(37,99,235,.8)',borderRadius:4,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:Object.assign({},TT,{callbacks:{label:function(c){return' '+c.raw+'%';}}})},scales:{x:Object.assign({},gx,{ticks:{callback:function(v){return v+'%';}},max:70}),y:gx}}});
+    }else if(id==='chart_descuento'){
       var bks=Object.keys(S.by_disc);
       var mgs=bks.map(function(k){return S.by_disc[k].sales>0?+(S.by_disc[k].profit/S.by_disc[k].sales*100).toFixed(1):0;});
-      mkC(id,{type:'bar',data:{labels:bks,datasets:[{label:'Margen %',data:mgs,backgroundColor:mgs.map(function(m){return m<0?'rgba(220,38,38,.8)':'rgba(37,99,235,.8)';}),borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:Object.assign({},TT,{callbacks:{label:function(c){return ' '+c.raw+'%';}}})},scales:{x:gx,y:Object.assign({},gy,{ticks:{callback:function(v){return v+'%';}}})}}});
+      mkC(id,{type:'bar',data:{labels:bks,datasets:[{label:'Margen %',data:mgs,backgroundColor:mgs.map(function(m){return m<0?'rgba(220,38,38,.8)':'rgba(37,99,235,.8)';}),borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:Object.assign({},TT,{callbacks:{label:function(c){return' '+c.raw+'%';}}})},scales:{x:gx,y:Object.assign({},gy,{ticks:{callback:function(v){return v+'%';}}})}}});
     }
   });
 }
 
-function renderReport(data, activeYears){
+function renderReport(data,activeYears){
   killCharts();
-  var filteredData = filterByYears(activeYears||[]);
-  var authors='J. A. Arias \u00b7 V. Chaux \u00b7 K. D. Ca\u00f1\u00f3n';
-  var subtitle=data.report_subtitle||'Per\u00edodo 2014\u20132017 | 8,680 registros depurados';
+  var filteredData=filterByYears(activeYears||[]);
+  var authors='J. A. Arias · V. Chaux · K. D. Cañón';
+  var subtitle=data.report_subtitle||'Período 2014–2017 | 8,680 registros depurados';
   var k=data.kpis||{};
   var totalLT=Object.values(S.by_ship).reduce(function(a,v){return a+v.lead_time_sum;},0);
   var totalSC=Object.values(S.by_ship).reduce(function(a,v){return a+v.count;},0);
-
-  var h='<div class="rh"><span>REPORTE EJECUTIVO \u00b7 Sample Superstore 2014\u20132017</span><span>'+authors+'</span></div>';
+  var h='<div class="rh"><span>REPORTE EJECUTIVO · Sample Superstore 2014–2017</span><span>'+authors+'</span></div>';
   h+='<div class="rb">';
-  h+='<div class="rt"><h1>Reporte Ejecutivo \u00b7 Sample Superstore</h1><p>'+subtitle+'</p></div>';
+  h+='<div class="rt"><h1>Reporte Ejecutivo · Sample Superstore</h1><p>'+subtitle+'</p></div>';
   h+='<table class="kpi-tbl"><thead><tr><th>Ventas</th><th>Ganancia</th><th>Margen</th><th>Ticket prom.</th><th>Pedidos</th><th>Clientes</th><th>Unidades</th><th>Lead time</th></tr></thead><tbody><tr>';
   h+='<td>'+(k.ventas||fmt(S.total_sales))+'</td>';
   h+='<td class="g">'+(k.ganancia||fmt(S.total_profit))+'</td>';
@@ -352,25 +532,20 @@ function renderReport(data, activeYears){
   h+='<td>'+(k.unidades||fmt(S.total_qty,'n'))+'</td>';
   h+='<td class="o">'+(k.lead_time||((totalLT/totalSC).toFixed(2)+' d'))+'</td>';
   h+='</tr></tbody></table>';
-  h+='<p class="kpi-cap">Indicador 1 \u00b7 Panel consolidado de KPIs ejecutivos del per\u00edodo.</p>';
+  h+='<p class="kpi-cap">Indicador 1 · Panel consolidado de KPIs ejecutivos del período.</p>';
   h+='<p class="narr">'+(data.kpi_narrative||'')+'</p>';
-
   (data.sections||[]).forEach(function(sec){
-    var pc=sec.priority==='CRITICO'||sec.priority==='\u00cdTICO'?'cr':sec.priority==='ALTO'?'al':'me';
-    h+='<div class="sec">';
-    h+='<div class="sec-lbl"><span class="pb '+pc+'">'+sec.priority+'</span><span class="sn">\u00b7 '+sec.num+'</span><span class="st">'+sec.title+'</span></div>';
-    h+='<div class="ch'+(sec.chart_id==='chart_sub'?' tall':'')+'">';
-    h+='<canvas id="'+sec.chart_id+'"></canvas></div>';
+    var pc=sec.priority==='CRITICO'||sec.priority==='CRÍTICO'?'cr':sec.priority==='ALTO'?'al':'me';
+    h+='<div class="sec"><div class="sec-lbl"><span class="pb '+pc+'">'+sec.priority+'</span><span class="sn">· '+sec.num+'</span><span class="st">'+sec.title+'</span></div>';
+    h+='<div class="ch'+(sec.chart_id==='chart_sub'?' tall':'')+'"><canvas id="'+sec.chart_id+'"></canvas></div>';
     h+='<div class="ib">'+sec.insight+'</div></div>';
   });
-
   h+='</div><div class="rf"><span>'+authors+'</span><span>Generado el '+new Date().toLocaleDateString('es-CO',{year:'numeric',month:'long',day:'numeric'})+'</span></div>';
-
   document.getElementById('report').innerHTML=h;
-  document.getElementById('rw').classList.add('vis');
-  document.getElementById('rm').textContent='Reporte generado \u00b7 '+new Date().toLocaleString('es-CO');
+  document.getElementById('rw').style.display='block';
+  document.getElementById('rm').textContent='Reporte generado · '+new Date().toLocaleString('es-CO');
   document.getElementById('rw').scrollIntoView({behavior:'smooth',block:'start'});
-  setTimeout(function(){buildCharts(data.sections||[], filteredData);},150);
+  setTimeout(function(){buildCharts(data.sections||[],filteredData);},150);
 }
 
 function setSt(v,t){
