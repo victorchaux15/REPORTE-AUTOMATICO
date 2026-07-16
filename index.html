@@ -3,10 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reporte Ejecutivo Superstore</title>
+<title>Generador de Reporte Ejecutivo · Multi-dataset</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1a1a2e;min-height:100vh}
@@ -16,7 +18,6 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1a1a2e;min-height:
 .ui-header p{font-size:12px;color:#94a3b8;margin-top:2px}
 .badge{background:#3b82f6;color:white;font-size:10px;font-weight:600;padding:3px 9px;border-radius:4px;letter-spacing:.5px;text-transform:uppercase;margin-left:auto;white-space:nowrap}
 
-/* Tabs */
 .tabs{display:flex;gap:0;margin-bottom:20px;background:white;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden}
 .tab{flex:1;padding:11px 16px;font-size:13px;font-weight:600;color:#64748b;background:transparent;border:none;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif}
 .tab.active{background:#1d4ed8;color:white}
@@ -48,6 +49,20 @@ textarea::placeholder{color:#cbd5e1}
 @keyframes spin{to{transform:rotate(360deg)}}
 .errbox{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:11px 15px;font-size:12px;color:#dc2626;margin-bottom:14px;display:none;word-break:break-all}
 .errbox.vis{display:block}
+.okbox{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:11px 15px;font-size:12px;color:#15803d;margin-top:10px;display:none}
+.okbox.vis{display:block}
+
+/* Carga de archivo */
+.dropzone{border:2px dashed #cbd5e1;border-radius:10px;padding:26px;text-align:center;cursor:pointer;transition:all .15s;background:#f8fafc}
+.dropzone:hover,.dropzone.drag{border-color:#3b82f6;background:#eff6ff}
+.dropzone p{font-size:13px;color:#475569;font-weight:600}
+.dropzone span{font-size:11px;color:#94a3b8;display:block;margin-top:4px}
+#fileInput{display:none}
+.colgrid{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.colcard{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:9px 11px;font-size:11px;min-width:160px}
+.colcard .cn{font-weight:700;color:#1e293b;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.colcard .cs{color:#94a3b8;font-size:10px;margin-bottom:6px}
+.colcard select{width:100%;font-size:11px;padding:5px 6px;border-radius:5px;border:1px solid #e2e8f0;font-family:'Inter',sans-serif;background:white;color:#1e293b}
 
 /* Consulta rápida resultado */
 #qrw{display:none}
@@ -59,7 +74,6 @@ textarea::placeholder{color:#cbd5e1}
 .q-answer-body{padding:18px 20px;font-size:13.5px;line-height:1.8;color:#1e293b}
 .q-answer-body strong{color:#0f172a}
 .q-answer-body h3{font-size:13px;font-weight:700;color:#0f172a;margin:14px 0 8px;text-transform:uppercase;letter-spacing:.5px}
-/* Tabla de consulta */
 .q-tbl{width:100%;border-collapse:collapse;margin:12px 0;font-size:12.5px}
 .q-tbl th{background:#f1f5f9;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#475569;padding:7px 10px;border:1px solid #e2e8f0;text-align:left}
 .q-tbl td{padding:7px 10px;border:1px solid #e2e8f0;color:#1e293b}
@@ -86,12 +100,14 @@ textarea::placeholder{color:#cbd5e1}
 .rt{text-align:center;margin-bottom:18px}
 .rt h1{font-size:22px;font-weight:700;color:#1a1a2e;letter-spacing:-.3px}
 .rt p{font-size:12px;color:#64748b;margin-top:4px;font-style:italic}
-.kpi-tbl{width:100%;border-collapse:collapse;border:1px solid #cbd5e1;margin-bottom:10px}
-.kpi-tbl th{background:#f1f5f9;font-size:10px;font-weight:600;text-align:center;padding:6px 8px;border:1px solid #cbd5e1;text-transform:uppercase;letter-spacing:.5px;color:#475569}
-.kpi-tbl td{text-align:center;font-weight:700;font-size:18px;padding:8px 8px;border:1px solid #cbd5e1;color:#0f172a}
-.kpi-tbl td.g{color:#16a34a}
-.kpi-tbl td.b{color:#2563eb}
-.kpi-tbl td.o{color:#d97706}
+.kpi-grid{display:flex;flex-wrap:wrap;gap:1px;background:#cbd5e1;border:1px solid #cbd5e1;border-radius:6px;overflow:hidden;margin-bottom:10px}
+.kpi-card{background:#f8fafc;padding:12px 10px;text-align:center;flex:1 1 150px;min-width:130px}
+.kpi-card .kl{font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:#475569;margin-bottom:6px;line-height:1.3}
+.kpi-card .kv{font-weight:700;font-size:16px;color:#0f172a;word-break:break-word;line-height:1.2}
+.kpi-card .kv.g{color:#16a34a}
+.kpi-card .kv.b{color:#2563eb}
+.kpi-card .kv.o{color:#d97706}
+@media(max-width:640px){.kpi-card{flex-basis:45%}.kpi-card .kv{font-size:14px}}
 .kpi-cap{font-size:11px;color:#64748b;font-style:italic;text-align:center;margin-bottom:14px}
 .narr{font-size:13px;line-height:1.75;color:#1e293b;margin-bottom:18px;text-align:justify}
 .narr strong{color:#0f172a}
@@ -104,21 +120,27 @@ textarea::placeholder{color:#cbd5e1}
 .sn{font-size:10px;font-weight:700;color:#64748b;flex-shrink:0}
 .st{font-size:15px;font-weight:700;color:#1a1a2e}
 .ch{position:relative;height:230px;margin-bottom:10px}
-.ch.tall{height:280px}
+.ch.tall{height:300px}
 .ib{background:#f0f9ff;border-left:3px solid #0284c7;padding:12px 15px;font-size:12.5px;line-height:1.7;color:#1e293b;text-align:justify;margin-top:10px}
 .ib strong{color:#0f172a}
 .rf{border-top:1px solid #e2e8f0;padding:8px 20px;display:flex;justify-content:space-between;font-size:10px;color:#94a3b8;background:#f8fafc;margin-top:6px}
 @media print{
   body{background:white!important}
-  .tabs,.tab-panel:not(.active){display:none!important}
-  .tab-panel.active{display:block!important}
-  .wrap>*:not(#rw){display:none!important}
+  .wrap>.ui-header,
+  .wrap>.card,
+  .tabs,
+  #tab-consulta,
+  #tab-reporte>.card,
+  #tab-reporte>.stbar,
+  #tab-reporte>.errbox{display:none!important}
+  #tab-reporte{display:block!important}
   #rw{display:block!important}
   .toolbar{display:none!important}
   #report{border:none!important;border-radius:0!important}
   .rh,.rf{background:#f8fafc!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .pb{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .ib{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .kpi-card{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .sec{page-break-inside:avoid}
   .ch{page-break-inside:avoid}
 }
@@ -130,15 +152,44 @@ textarea::placeholder{color:#cbd5e1}
 <div class="ui-header">
   <div>
     <h1>Generador de Reporte Ejecutivo</h1>
-    <p>Sample Superstore 2014–2017 · J. A. Arias · V. Chaux · K. D. Cañón</p>
+    <p id="hdrSub">Sube cualquier base de datos (CSV o Excel) para comenzar</p>
   </div>
   <div class="badge">Tesis MDS</div>
 </div>
 
-<!-- API Key compartida -->
+<!-- Carga de datos -->
+<div class="card">
+  <div class="lbl">1. Sube tu base de datos</div>
+  <div class="dropzone" id="dz" onclick="document.getElementById('fileInput').click()">
+    <p>📂 Haz clic o arrastra tu archivo aquí</p>
+    <span>Formatos soportados: .csv, .xlsx, .xls</span>
+  </div>
+  <input type="file" id="fileInput" accept=".csv,.xlsx,.xls">
+  <div class="errbox" id="fileErr"></div>
+  <div class="okbox" id="fileOk"></div>
+  <div id="colPreviewWrap" style="display:none">
+    <div class="lbl" style="margin-top:16px">Columnas detectadas · corrige el tipo si hace falta</div>
+    <div class="colgrid" id="colGrid"></div>
+    <button class="hint" onclick="rebuildProfile(true)">↻ Recalcular con estos tipos</button>
+  </div>
+</div>
+
+<!-- Config general -->
 <div class="card" style="padding:16px 22px">
-  <div class="lbl">API Key · Anthropic (Claude)</div>
-  <input type="password" id="ak" placeholder="sk-ant-api03-..." style="width:100%;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;color:#1e293b;font-family:'Inter',sans-serif;font-size:13px;padding:10px 13px;outline:none;transition:border-color .2s"/>
+  <div class="row" style="margin-top:0">
+    <div class="fw">
+      <label>API Key · Anthropic (Claude)</label>
+      <input type="password" id="ak" placeholder="sk-ant-api03-...">
+    </div>
+    <div class="fw">
+      <label>Título del reporte (opcional)</label>
+      <input type="text" id="projTitle" placeholder="Ej: Reporte Ejecutivo de Ventas">
+    </div>
+    <div class="fw">
+      <label>Autor(es) (opcional)</label>
+      <input type="text" id="projAuthor" placeholder="Ej: Equipo de Analítica">
+    </div>
+  </div>
 </div>
 
 <!-- Tabs -->
@@ -150,22 +201,13 @@ textarea::placeholder{color:#cbd5e1}
 <!-- TAB: Consulta rápida -->
 <div id="tab-consulta" class="tab-panel active">
   <div class="card">
-    <div class="lbl">Hazme una pregunta sobre el dataset</div>
+    <div class="lbl">Hazme una pregunta sobre tu dataset</div>
     <div class="hints" id="qhints">
-      <button class="hint" onclick="hq(this)">¿Cuál fue el top 5 de ventas por subcategoría en 2017?</button>
-      <button class="hint" onclick="hq(this)">¿Qué región tuvo las ventas más bajas y cuál fue su margen?</button>
-      <button class="hint" onclick="hq(this)">¿Cuáles subcategorías generaron pérdidas?</button>
-      <button class="hint" onclick="hq(this)">¿Cuál fue el mes con mayor ganancia en 2016?</button>
-      <button class="hint" onclick="hq(this)">¿Cómo evolucionaron las ventas año a año?</button>
-      <button class="hint" onclick="hq(this)">¿Cuál es el impacto de los descuentos en el margen?</button>
-      <button class="hint" onclick="hq(this)">¿Qué segmento tiene mejor relación ventas/ganancia?</button>
-      <button class="hint" onclick="hq(this)">¿Cuál fue el trimestre más rentable del período?</button>
-      <button class="hint" onclick="hq(this)">Compara 2014 vs 2017: crecimiento en ventas y ganancia</button>
-      <button class="hint" onclick="hq(this)">¿Qué modo de envío tiene el mejor margen?</button>
+      <button class="hint" disabled>Sube un archivo para ver preguntas sugeridas</button>
     </div>
-    <textarea id="qp" placeholder="Ej: ¿Cuál fue el top 3 de subcategorías con mayor ganancia en 2015? ¿Qué mes tuvo las ventas más bajas?" rows="3"></textarea>
+    <textarea id="qp" placeholder="Sube tu archivo primero. Luego, por ejemplo: ¿Cuál es el top 5 por categoría según la columna X?" rows="3"></textarea>
     <div class="row" style="margin-top:12px">
-      <button class="btn-ask" id="bq" onclick="ask()">🔍 Consultar</button>
+      <button class="btn-ask" id="bq" onclick="ask()" disabled>🔍 Consultar</button>
     </div>
   </div>
 
@@ -178,16 +220,12 @@ textarea::placeholder{color:#cbd5e1}
 <div id="tab-reporte" class="tab-panel">
   <div class="card">
     <div class="lbl">Prompt del reporte</div>
-    <div class="hints">
-      <button class="hint" onclick="hp(this)">Reporte ejecutivo completo (todas las secciones)</button>
-      <button class="hint" onclick="hp(this)">Solo el año 2017</button>
-      <button class="hint" onclick="hp(this)">Rentabilidad por categoría, región y sub-categoría</button>
-      <button class="hint" onclick="hp(this)">Análisis de segmentos y tendencias anuales</button>
-      <button class="hint" onclick="hp(this)">Descuentos y modos de envío</button>
+    <div class="hints" id="phints">
+      <button class="hint" disabled>Sube un archivo para ver sugerencias</button>
     </div>
-    <textarea id="up" placeholder="Ej: Genera un reporte ejecutivo del año 2017 con KPIs, tendencia, categorías y regiones..."></textarea>
+    <textarea id="up" placeholder="Sube tu archivo primero. Luego, por ejemplo: Genera un reporte ejecutivo completo con KPIs, tendencia y categorías principales..."></textarea>
     <div class="row">
-      <button class="btn-gen" id="bg" onclick="gen()">▶ Generar Reporte</button>
+      <button class="btn-gen" id="bg" onclick="gen()" disabled>▶ Generar Reporte</button>
     </div>
   </div>
 
@@ -206,18 +244,74 @@ textarea::placeholder{color:#cbd5e1}
 </div><!-- /wrap -->
 
 <script>
-// ─── DATASET ──────────────────────────────────────────────────────────────────
-const S = {"total_sales":844204.58,"total_profit":116551.82,"total_qty":31150.0,"row_count":8680,"unique_orders":4683,"unique_customers":790,"margin":13.81,"by_cat":{"Furniture":{"sales":284015.22,"profit":17309.93,"qty":5518.0,"count":1649},"Office Supplies":{"sales":326754.89,"profit":65844.1,"qty":20715.0,"count":5609},"Technology":{"sales":233434.47,"profit":33397.8,"qty":4917.0,"count":1422}},"by_sub":{"Bookcases":{"sales":45073.25,"profit":1275.55,"qty":462.0,"count":155,"category":"Furniture"},"Labels":{"sales":9090.43,"profit":3983.56,"qty":1348.0,"count":357,"category":"Office Supplies"},"Storage":{"sales":117415.76,"profit":7346.79,"qty":2542.0,"count":736,"category":"Office Supplies"},"Furnishings":{"sales":70655.5,"profit":11918.55,"qty":3280.0,"count":913,"category":"Furniture"},"Art":{"sales":25749.92,"profit":6303.91,"qty":2985.0,"count":794,"category":"Office Supplies"},"Binders":{"sales":45904.28,"profit":6767.23,"qty":5353.0,"count":1393,"category":"Office Supplies"},"Appliances":{"sales":41618.44,"profit":8156.11,"qty":1269.0,"count":372,"category":"Office Supplies"},"Paper":{"sales":62032.99,"profit":26529.25,"qty":4876.0,"count":1323,"category":"Office Supplies"},"Phones":{"sales":134295.58,"profit":15102.41,"qty":2316.0,"count":695,"category":"Technology"},"Chairs":{"sales":126408.9,"profit":4401.6,"qty":1400.0,"count":439,"category":"Furniture"},"Accessories":{"sales":85247.16,"profit":16832.47,"qty":2474.0,"count":681,"category":"Technology"},"Envelopes":{"sales":11882.2,"profit":5002.86,"qty":832.0,"count":240,"category":"Office Supplies"},"Fasteners":{"sales":3024.28,"profit":949.52,"qty":914.0,"count":217,"category":"Office Supplies"},"Supplies":{"sales":10036.6,"profit":804.88,"qty":596.0,"count":177,"category":"Office Supplies"},"Tables":{"sales":41877.57,"profit":-285.78,"qty":376.0,"count":142,"category":"Furniture"},"Machines":{"sales":9131.9,"profit":634.95,"qty":105.0,"count":36,"category":"Technology"},"Copiers":{"sales":4759.84,"profit":827.97,"qty":22.0,"count":10,"category":"Technology"}},"by_region":{"South":{"sales":132120.74,"profit":20261.84,"count":1402},"West":{"sales":314857.3,"profit":48526.03,"count":2851},"Central":{"sales":182247.44,"profit":16345.52,"count":1993},"East":{"sales":214979.1,"profit":31418.43,"count":2434}},"by_seg":{"Consumer":{"sales":453319.62,"profit":60852.62,"count":4557},"Corporate":{"sales":247406.11,"profit":34478.4,"count":2591},"Home Office":{"sales":143478.85,"profit":21220.8,"count":1532}},"by_year":{"2014":{"sales":173108.23,"profit":23612.17,"count":1734},"2015":{"sales":181435.5,"profit":26355.31,"count":1812},"2016":{"sales":210187.78,"profit":29017.42,"count":2228},"2017":{"sales":279473.07,"profit":37566.92,"count":2906}},"by_ym":{"2014-01":{"sales":5983.22,"profit":528.51,"count":70,"year":2014,"month":1},"2014-02":{"sales":2794.77,"profit":580.62,"count":44,"year":2014,"month":2},"2014-03":{"sales":12694.55,"profit":1492.75,"count":135,"year":2014,"month":3},"2014-04":{"sales":11307.06,"profit":1990.16,"count":117,"year":2014,"month":4},"2014-05":{"sales":8761.91,"profit":1392.6,"count":103,"year":2014,"month":5},"2014-06":{"sales":10051.85,"profit":1549.58,"count":111,"year":2014,"month":6},"2014-07":{"sales":14229.38,"profit":1648.89,"count":129,"year":2014,"month":7},"2014-08":{"sales":11514.27,"profit":2106.14,"count":132,"year":2014,"month":8},"2014-09":{"sales":19692.96,"profit":3344.56,"count":228,"year":2014,"month":9},"2014-10":{"sales":17177.91,"profit":1699.92,"count":147,"year":2014,"month":10},"2014-11":{"sales":31148.22,"profit":3980.4,"count":274,"year":2014,"month":11},"2014-12":{"sales":27752.12,"profit":3298.05,"count":244,"year":2014,"month":12},"2015-01":{"sales":3989.68,"profit":662.79,"count":48,"year":2015,"month":1},"2015-02":{"sales":5291.3,"profit":715.13,"count":57,"year":2015,"month":2},"2015-03":{"sales":10342.85,"profit":1928.27,"count":117,"year":2015,"month":3},"2015-04":{"sales":12853.03,"profit":1276.65,"count":135,"year":2015,"month":4},"2015-05":{"sales":13097.7,"profit":1822.11,"count":130,"year":2015,"month":5},"2015-06":{"sales":11690.2,"profit":1850.28,"count":125,"year":2015,"month":6},"2015-07":{"sales":14673.74,"profit":2106.13,"count":121,"year":2015,"month":7},"2015-08":{"sales":13968.5,"profit":1956.7,"count":134,"year":2015,"month":8},"2015-09":{"sales":23645.17,"profit":3702.03,"count":252,"year":2015,"month":9},"2015-10":{"sales":16286.31,"profit":2241.15,"count":148,"year":2015,"month":10},"2015-11":{"sales":30384.03,"profit":3820.86,"count":275,"year":2015,"month":11},"2015-12":{"sales":25212.99,"profit":4273.24,"count":270,"year":2015,"month":12},"2016-01":{"sales":7467.36,"profit":1062.14,"count":78,"year":2016,"month":1},"2016-02":{"sales":8727.59,"profit":1182.8,"count":73,"year":2016,"month":2},"2016-03":{"sales":14498.05,"profit":1422.2,"count":132,"year":2016,"month":3},"2016-04":{"sales":13068.09,"profit":1539.32,"count":148,"year":2016,"month":4},"2016-05":{"sales":14910.67,"profit":2176.63,"count":194,"year":2016,"month":5},"2016-06":{"sales":16556.15,"profit":2568.44,"count":172,"year":2016,"month":6},"2016-07":{"sales":17414.78,"profit":2344.72,"count":177,"year":2016,"month":7},"2016-08":{"sales":15609.06,"profit":1998.88,"count":160,"year":2016,"month":8},"2016-09":{"sales":26961.6,"profit":3962.08,"count":312,"year":2016,"month":9},"2016-10":{"sales":15127.56,"profit":1920.69,"count":171,"year":2016,"month":10},"2016-11":{"sales":30229.52,"profit":4205.32,"count":322,"year":2016,"month":11},"2016-12":{"sales":29617.36,"profit":4634.2,"count":289,"year":2016,"month":12},"2017-01":{"sales":11075.02,"profit":1409.49,"count":132,"year":2017,"month":1},"2017-02":{"sales":8972.14,"profit":1329.69,"count":92,"year":2017,"month":2},"2017-03":{"sales":21280.76,"profit":3448.4,"count":207,"year":2017,"month":3},"2017-04":{"sales":17475.29,"profit":1935.09,"count":188,"year":2017,"month":4},"2017-05":{"sales":20404.68,"profit":2693.11,"count":213,"year":2017,"month":5},"2017-06":{"sales":22393.43,"profit":2708.88,"count":215,"year":2017,"month":6},"2017-07":{"sales":21127.68,"profit":3205.66,"count":199,"year":2017,"month":7},"2017-08":{"sales":19506.83,"profit":3466.31,"count":185,"year":2017,"month":8},"2017-09":{"sales":35264.4,"profit":5719.61,"count":405,"year":2017,"month":9},"2017-10":{"sales":25763.2,"profit":2012.35,"count":265,"year":2017,"month":10},"2017-11":{"sales":39120.63,"profit":4191.33,"count":396,"year":2017,"month":11},"2017-12":{"sales":37089.01,"profit":5447.01,"count":409,"year":2017,"month":12}},"by_disc":{"0%":{"sales":358941.48,"profit":95298.39,"count":4177},"1-20%":{"sales":403603.31,"profit":39702.04,"count":3471},"21-40%":{"sales":66622.49,"profit":-6323.01,"count":282},">40%":{"sales":15037.31,"profit":-12125.6,"count":750}},"top_customers":[{"name":"William Brown","sales":3771.09,"profit":282.84,"orders":11},{"name":"James Galang","sales":3420.51,"profit":385.44,"orders":9},{"name":"Sally Hughsby","sales":3406.84,"profit":558.47,"orders":13},{"name":"Dan Reichenbach","sales":3267.75,"profit":436.1,"orders":8},{"name":"Rob Lucas","sales":3208.07,"profit":347.23,"orders":8},{"name":"Paul Prost","sales":3020.89,"profit":439.96,"orders":10},{"name":"Stewart Carmichael","sales":2951.09,"profit":227.64,"orders":7},{"name":"Naresj Patel","sales":2949.3,"profit":631.04,"orders":6},{"name":"Matt Abelman","sales":2949.19,"profit":715.24,"orders":11},{"name":"John Lee","sales":2941.43,"profit":636.39,"orders":11}],"by_ship":{"Second Class":{"sales":169771.56,"profit":25173.69,"count":1686,"lead_time_sum":5466.0},"Standard Class":{"sales":495531.08,"profit":67310.83,"count":5174,"lead_time_sum":25934.0},"First Class":{"sales":134570.23,"profit":17771.64,"count":1355,"lead_time_sum":2953.0},"Same Day":{"sales":44331.72,"profit":6295.67,"count":465,"lead_time_sum":23.0}}};
-const OBY = {"2014":{"orders":912,"customers":572},"2015":{"orders":971,"customers":555},"2016":{"orders":1218,"customers":618},"2017":{"orders":1582,"customers":677}};
+// ─── ESTADO GLOBAL ────────────────────────────────────────────────────────────
+var rawRows = null;      // filas crudas del archivo cargado
+var columns = [];        // [{name, type}] type: numeric | date | categorical | identifier
+var profile = null;      // perfil estadístico agregado (lo único que se envía a Claude)
+var datasetName = '';
 
-// ─── HELPERS ──────────────────────────────────────────────────────────────────
-function fmt(n,t){
-  if(!t||t==='$') return '$'+n.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0});
-  if(t==='%') return n.toFixed(2)+'%';
-  if(t==='n') return n.toLocaleString('en-US',{maximumFractionDigits:0});
-  return String(n);
+// ─── HELPERS NUMÉRICOS ────────────────────────────────────────────────────────
+function fmtNum(n){
+  if(typeof n!=='number'||isNaN(n)) return String(n);
+  return n.toLocaleString('es-CO',{maximumFractionDigits:2});
 }
 function getAK(){return document.getElementById('ak').value.trim();}
+
+function toNumber(v){
+  if(typeof v==='number') return v;
+  if(v==null) return NaN;
+  var s=String(v).trim();
+  if(s==='') return NaN;
+  s=s.replace(/[€$£¥₹\s]/g,'').replace(/%$/,'');
+  var hasComma=s.indexOf(',')!==-1;
+  var hasDot=s.indexOf('.')!==-1;
+  if(hasComma && hasDot){
+    if(s.lastIndexOf(',')>s.lastIndexOf('.')){ s=s.replace(/\./g,'').replace(',','.'); }
+    else { s=s.replace(/,/g,''); }
+  }else if(hasComma && !hasDot){
+    var parts=s.split(',');
+    if(parts.length===2 && parts[1].length<=2){ s=s.replace(',','.'); }
+    else { s=s.replace(/,/g,''); }
+  }
+  // si solo hay punto, se deja tal cual: SIEMPRE es el separador decimal estándar,
+  // sin importar cuántos dígitos lo sigan (nunca se reinterpreta como separador de miles)
+  var n=parseFloat(s);
+  return n;
+}
+
+var DATE_RE = /^\d{4}-\d{1,2}-\d{1,2}([T ].*)?$|^\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}$|^\d{1,2} de [a-zA-Zé]+ de \d{4}$|^[a-zA-Z]{3,9}\s+\d{1,2},?\s+\d{4}$/;
+function isDateString(v){
+  if(v instanceof Date) return !isNaN(v.getTime());
+  var s=String(v).trim();
+  if(s==='') return false;
+  if(/^-?\d+(\.\d+)?$/.test(s)) return false; // números puros no cuentan como fecha
+  if(!DATE_RE.test(s)) return false;
+  var d=new Date(s);
+  return !isNaN(d.getTime()) && d.getFullYear()>1900 && d.getFullYear()<2200;
+}
+function parseDateVal(v){
+  if(v instanceof Date) return isNaN(v.getTime())?null:v;
+  var s=String(v).trim();
+  if(!isDateString(s)) return null;
+  // ISO YYYY-MM-DD (con o sin hora): se construye como fecha LOCAL a partir de sus componentes,
+  // para evitar que new Date(string) la interprete en UTC y la corra de año en zonas horarias negativas.
+  var m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if(m){
+    var d1=new Date(+m[1],+m[2]-1,+m[3]);
+    return isNaN(d1.getTime())?null:d1;
+  }
+  // DD/MM/YYYY, MM/DD/YYYY o DD-MM-YYYY
+  m=s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+  if(m){
+    var a=+m[1],b=+m[2],y=+m[3]; if(y<100) y+=2000;
+    var month=a,day=b;
+    if(a>12 && b<=12){ month=b; day=a; } // si el primer número no puede ser mes, se interpreta como DD/MM
+    var d2=new Date(y,month-1,day);
+    return isNaN(d2.getTime())?null:d2;
+  }
+  var d=new Date(s);
+  return isNaN(d.getTime())?null:d;
+}
 
 // ─── TABS ─────────────────────────────────────────────────────────────────────
 function switchTab(t){
@@ -225,128 +319,473 @@ function switchTab(t){
   document.querySelectorAll('.tab-panel').forEach(function(p,i){p.classList.toggle('active',['tab-consulta','tab-reporte'][i]==='tab-'+t);});
 }
 
+// ─── CARGA Y PARSEO DE ARCHIVO ────────────────────────────────────────────────
+var dz=document.getElementById('dz');
+dz.addEventListener('dragover',function(e){e.preventDefault();dz.classList.add('drag');});
+dz.addEventListener('dragleave',function(){dz.classList.remove('drag');});
+dz.addEventListener('drop',function(e){
+  e.preventDefault();dz.classList.remove('drag');
+  if(e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+});
+document.getElementById('fileInput').addEventListener('change',function(e){
+  if(e.target.files.length) handleFile(e.target.files[0]);
+});
+
+function parseFile(file){
+  return new Promise(function(resolve,reject){
+    var ext=file.name.split('.').pop().toLowerCase();
+    if(ext==='csv'){
+      Papa.parse(file,{header:true,skipEmptyLines:true,
+        complete:function(res){resolve(res.data);},
+        error:function(err){reject(new Error(err.message||'Error leyendo CSV'));}
+      });
+    }else if(ext==='xlsx'||ext==='xls'){
+      var reader=new FileReader();
+      reader.onload=function(e){
+        try{
+          var wb=XLSX.read(e.target.result,{type:'array'});
+          var ws=wb.Sheets[wb.SheetNames[0]];
+          var data=XLSX.utils.sheet_to_json(ws,{defval:''});
+          resolve(data);
+        }catch(err){reject(err);}
+      };
+      reader.onerror=function(){reject(new Error('No se pudo leer el archivo.'));};
+      reader.readAsArrayBuffer(file);
+    }else{
+      reject(new Error('Formato no soportado. Usa .csv, .xlsx o .xls'));
+    }
+  });
+}
+
+async function handleFile(file){
+  hideFileMsg();
+  try{
+    var rows=await parseFile(file);
+    rows=rows.filter(function(r){return Object.values(r).some(function(v){return String(v).trim()!=='';});});
+    if(!rows.length) throw new Error('El archivo no contiene filas de datos.');
+    var cols=Object.keys(rows[0]);
+    if(!cols.length) throw new Error('No se detectaron columnas (encabezados).');
+    rawRows=rows;
+    columns=cols.map(function(c){return {name:c,type:detectType(rows,c)};});
+    datasetName=file.name.replace(/\.(csv|xlsx|xls)$/i,'');
+    renderColumnPreview();
+    rebuildProfile(false);
+    generateDynamicHints();
+    document.getElementById('bq').disabled=false;
+    document.getElementById('bg').disabled=false;
+    showFileOk(rows.length.toLocaleString('es-CO')+' filas · '+cols.length+' columnas cargadas de "'+file.name+'"');
+    document.getElementById('hdrSub').textContent=datasetName+' · '+rows.length.toLocaleString('es-CO')+' registros';
+  }catch(err){
+    showFileErr('Error: '+err.message);
+  }
+}
+
+// Columnas que PARECEN numéricas (son puros dígitos) pero en realidad son códigos/identificadores
+// y nunca deberían sumarse ni promediarse: teléfonos, códigos postales, códigos internos, documentos, etc.
+var CODE_NAME_PATTERNS=['telefono','teléfono','phone','celular','movil','móvil','fax','codigo','código','postal','zip','nit','cedula','cédula','dni','rut','curp','folio','matricula','matrícula','serial','identificador'];
+function isCodeLikeName(name){
+  var n=normTxt(name);
+  for(var i=0;i<CODE_NAME_PATTERNS.length;i++){
+    if(n.indexOf(normTxt(CODE_NAME_PATTERNS[i]))!==-1) return true;
+  }
+  return false;
+}
+
+function detectType(rows,col){
+  var sample=rows.slice(0,Math.min(rows.length,300));
+  var vals=sample.map(function(r){return r[col];}).filter(function(v){return v!==undefined&&v!==null&&String(v).trim()!=='';});
+  if(!vals.length) return 'categorical';
+  var numCount=vals.filter(function(v){return !isNaN(toNumber(v));}).length;
+  var dateCount=vals.filter(isDateString).length;
+  if(dateCount/vals.length>0.7) return 'date';
+  if(numCount/vals.length>0.8) return isCodeLikeName(col)?'identifier':'numeric';
+  var uniq=new Set(vals.map(String)).size;
+  if(uniq>vals.length*0.9 && vals.length>25) return 'identifier';
+  return 'categorical';
+}
+
+function typeLabel(t){return {numeric:'Numérico',date:'Fecha',categorical:'Categoría',identifier:'Identificador (ignorar)'}[t]||t;}
+
+function renderColumnPreview(){
+  var h='';
+  columns.forEach(function(c,i){
+    var sampleVals=(rawRows.slice(0,3).map(function(r){return r[c.name];})).join(', ');
+    h+='<div class="colcard"><div class="cn">'+c.name+'</div><div class="cs">'+(sampleVals.length>40?sampleVals.slice(0,40)+'…':sampleVals)+'</div>';
+    h+='<select data-idx="'+i+'" onchange="onTypeChange(this)">';
+    ['numeric','date','categorical','identifier'].forEach(function(t){
+      h+='<option value="'+t+'" '+(c.type===t?'selected':'')+'>'+typeLabel(t)+'</option>';
+    });
+    h+='</select></div>';
+  });
+  document.getElementById('colGrid').innerHTML=h;
+  document.getElementById('colPreviewWrap').style.display='block';
+}
+function onTypeChange(sel){columns[+sel.dataset.idx].type=sel.value;}
+
+function showFileErr(m){var e=document.getElementById('fileErr');e.textContent=m;e.classList.add('vis');document.getElementById('fileOk').classList.remove('vis');}
+function showFileOk(m){var e=document.getElementById('fileOk');e.textContent=m;e.classList.add('vis');document.getElementById('fileErr').classList.remove('vis');}
+function hideFileMsg(){document.getElementById('fileErr').classList.remove('vis');document.getElementById('fileOk').classList.remove('vis');}
+
+// ─── PERFIL ESTADÍSTICO GENÉRICO ─────────────────────────────────────────────
+function buildProfile(rows,cols){
+  var numericCols=cols.filter(function(c){return c.type==='numeric';}).map(function(c){return c.name;});
+  var dateCols=cols.filter(function(c){return c.type==='date';}).map(function(c){return c.name;});
+  var catCols=cols.filter(function(c){return c.type==='categorical';}).map(function(c){return c.name;});
+  var idCols=cols.filter(function(c){return c.type==='identifier';}).map(function(c){return c.name;});
+
+  // Cardinalidad real (conteo de valores únicos) de cada columna categórica e identificadora.
+  // Esto es lo correcto para KPIs de tipo "número de pedidos únicos" o "clientes únicos",
+  // que NO deben confundirse con el total de filas (una misma orden puede tener varias filas).
+  var cardinalidades={};
+  catCols.concat(idCols).forEach(function(col){
+    var vals=rows.map(function(r){return r[col];}).filter(function(v){return v!==undefined&&v!==null&&String(v).trim()!=='';});
+    cardinalidades[col]=new Set(vals.map(String)).size;
+  });
+
+  var numeric_summary={};
+  numericCols.forEach(function(col){
+    var vals=rows.map(function(r){return toNumber(r[col]);}).filter(function(v){return !isNaN(v);});
+    if(!vals.length) return;
+    numeric_summary[col]={
+      sum:+vals.reduce(function(a,b){return a+b;},0).toFixed(2),
+      avg:+(vals.reduce(function(a,b){return a+b;},0)/vals.length).toFixed(2),
+      min:Math.min.apply(null,vals),
+      max:Math.max.apply(null,vals),
+      count:vals.length
+    };
+  });
+
+  var date_summary={};
+  dateCols.forEach(function(col){
+    var by_year={};
+    var parsedCount=0;
+    rows.forEach(function(r){
+      var d=parseDateVal(r[col]); if(!d) return;
+      parsedCount++;
+      var y=d.getFullYear();
+      if(!by_year[y]) by_year[y]={count:0};
+      by_year[y].count++;
+      numericCols.forEach(function(nc){
+        var v=toNumber(r[nc]);
+        if(!isNaN(v)) by_year[y][nc]=+((by_year[y][nc]||0)+v).toFixed(2);
+      });
+    });
+    if(!parsedCount) return;
+    var years=Object.keys(by_year).sort();
+    var by_month=null;
+    if(years.length<=6){
+      by_month={};
+      rows.forEach(function(r){
+        var d=parseDateVal(r[col]); if(!d) return;
+        var key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+        if(!by_month[key]) by_month[key]={count:0};
+        by_month[key].count++;
+        numericCols.forEach(function(nc){
+          var v=toNumber(r[nc]);
+          if(!isNaN(v)) by_month[key][nc]=+((by_month[key][nc]||0)+v).toFixed(2);
+        });
+      });
+    }
+    date_summary[col]={years_available:years,by_year:by_year,by_month:by_month};
+  });
+
+  // Diferencia promedio en días entre pares de columnas de fecha (ej. fecha de pedido vs. fecha de envío).
+  // Genérico: si hay 2+ columnas de fecha, calcula la diferencia absoluta promedio entre cada par.
+  var date_diff_summary={};
+  if(dateCols.length>=2){
+    for(var i=0;i<dateCols.length;i++){
+      for(var j=i+1;j<dateCols.length;j++){
+        var colA=dateCols[i],colB=dateCols[j];
+        var diffs=[];
+        rows.forEach(function(r){
+          var d1=parseDateVal(r[colA]),d2=parseDateVal(r[colB]);
+          if(d1&&d2) diffs.push(Math.abs((d2-d1)/86400000));
+        });
+        if(diffs.length){
+          date_diff_summary[colA+' vs '+colB]={
+            avg_dias:+(diffs.reduce(function(a,b){return a+b;},0)/diffs.length).toFixed(2),
+            count:diffs.length
+          };
+        }
+      }
+    }
+  }
+
+  var categorical_summary={};
+  catCols.forEach(function(col){
+    var groups={};
+    rows.forEach(function(r){
+      var key=String(r[col]===undefined||r[col]===null||String(r[col]).trim()===''?'(vacío)':r[col]).trim();
+      if(!groups[key]) groups[key]={count:0};
+      groups[key].count++;
+      numericCols.forEach(function(nc){
+        var v=toNumber(r[nc]);
+        if(!isNaN(v)) groups[key][nc]=+((groups[key][nc]||0)+v).toFixed(2);
+      });
+    });
+    var entries=Object.entries(groups).sort(function(a,b){return b[1].count-a[1].count;});
+    var top=entries.slice(0,20), rest=entries.slice(20);
+    var result={};
+    top.forEach(function(e){result[e[0]]=e[1];});
+    if(rest.length){
+      var restAgg={count:0};
+      rest.forEach(function(e){
+        restAgg.count+=e[1].count;
+        numericCols.forEach(function(nc){restAgg[nc]=+((restAgg[nc]||0)+(e[1][nc]||0)).toFixed(2);});
+      });
+      result['Otros ('+rest.length+' valores)']=restAgg;
+    }
+    categorical_summary[col]=result;
+  });
+
+  var kpis_estandar=computeStandardKPIs({
+    numericCols:numericCols,catCols:catCols.concat(idCols),dateCols:dateCols,
+    numeric_summary:numeric_summary,cardinalidades:cardinalidades,date_diff_summary:date_diff_summary
+  });
+
+  return {
+    meta:{row_count:rows.length,dataset_name:datasetName,
+      columnas:{numericas:numericCols,fechas:dateCols,categoricas:catCols,identificadores:idCols},
+      cardinalidades:cardinalidades},
+    numeric_summary:numeric_summary,
+    date_summary:date_summary,
+    date_diff_summary:date_diff_summary,
+    categorical_summary:categorical_summary,
+    kpis_estandar:kpis_estandar
+  };
+}
+
+// ─── LOS 8 INDICADORES ESTÁNDAR (siempre los mismos, calculados por código, no por el LLM) ───
+function pickPrimaryDateCol(dateCols){
+  if(!dateCols||!dateCols.length) return null;
+  var preferred=findColByKeywords(dateCols,['orden','pedido','compra','transacc','venta']);
+  if(preferred) return preferred;
+  var avoidShip=dateCols.filter(function(c){
+    var n=normTxt(c);
+    return n.indexOf('envio')===-1 && n.indexOf('ship')===-1 && n.indexOf('entrega')===-1 && n.indexOf('deliver')===-1 && n.indexOf('recib')===-1;
+  });
+  return avoidShip.length?avoidShip[0]:dateCols[0];
+}
+
+function normTxt(s){
+  return String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();
+}
+function findColByKeywords(list,keywords){
+  for(var i=0;i<list.length;i++){
+    var n=normTxt(list[i]);
+    for(var j=0;j<keywords.length;j++){ if(n.indexOf(keywords[j])!==-1) return list[i]; }
+  }
+  return null;
+}
+function computeStandardKPIs(ctx){
+  var salesCol=findColByKeywords(ctx.numericCols,['venta','sales','revenue','ingreso','importe','monto']);
+  var profitCol=findColByKeywords(ctx.numericCols,['ganancia','profit','utilidad','beneficio']);
+  var qtyCol=findColByKeywords(ctx.numericCols,['cantidad','unidad','qty','quantity']);
+  var orderCol=findColByKeywords(ctx.catCols,['pedido','orden','order','factura','invoice','transacc']);
+  var customerCol=findColByKeywords(ctx.catCols,['cliente','customer','client']);
+
+  var ventas=salesCol?ctx.numeric_summary[salesCol].sum:null;
+  var ganancia=profitCol?ctx.numeric_summary[profitCol].sum:null;
+  var unidades=qtyCol?ctx.numeric_summary[qtyCol].sum:null;
+  var pedidos=orderCol?ctx.cardinalidades[orderCol]:null;
+  var clientes=customerCol?ctx.cardinalidades[customerCol]:null;
+  var margen=(ventas!=null&&ganancia!=null&&ventas!==0)?(ganancia/ventas*100):null;
+  var ticket=(ventas!=null&&pedidos)?(ventas/pedidos):null;
+  var leadTime=null;
+  var diffKeys=Object.keys(ctx.date_diff_summary||{});
+  if(diffKeys.length) leadTime=ctx.date_diff_summary[diffKeys[0]].avg_dias;
+
+  return {
+    fuentes:{ventas:salesCol,ganancia:profitCol,unidades:qtyCol,pedidos:orderCol,clientes:customerCol},
+    ventas_totales:ventas, ganancia_total:ganancia, margen_pct:margen, ticket_promedio:ticket,
+    pedidos:pedidos, clientes:clientes, unidades:unidades, lead_time_dias:leadTime
+  };
+}
+function fmtKPICards(k){
+  var all=[
+    {label:'Ventas Totales', ok:k.ventas_totales!=null, value:'$'+fmtNum(k.ventas_totales), cls:''},
+    {label:'Ganancia Total', ok:k.ganancia_total!=null, value:'$'+fmtNum(k.ganancia_total), cls:'g'},
+    {label:'Margen', ok:k.margen_pct!=null, value:k.margen_pct!=null?k.margen_pct.toFixed(2)+'%':'', cls:'o'},
+    {label:'Ticket Promedio', ok:k.ticket_promedio!=null, value:'$'+fmtNum(k.ticket_promedio), cls:'b'},
+    {label:'Pedidos', ok:k.pedidos!=null, value:fmtNum(k.pedidos), cls:''},
+    {label:'Clientes', ok:k.clientes!=null, value:fmtNum(k.clientes), cls:''},
+    {label:'Unidades', ok:k.unidades!=null, value:fmtNum(k.unidades), cls:''},
+    {label:'Lead Time Prom.', ok:k.lead_time_dias!=null, value:k.lead_time_dias!=null?k.lead_time_dias.toFixed(2)+' días':'', cls:'o'}
+  ];
+  return all.filter(function(c){return c.ok;}).map(function(c){return {label:c.label,value:c.value,cls:c.cls};});
+}
+
+// Si el dataset no tiene NINGUNA columna equivalente a ventas/ganancia/pedidos/etc. (ej. un
+// directorio educativo, un dataset de salud, etc.), no tiene sentido mostrar ese panel de ventas.
+// En su lugar se arma un panel genérico con lo que el dataset SÍ tiene: total de registros,
+// totales de sus columnas numéricas reales, y la cardinalidad de su columna categórica principal.
+function buildGenericFallbackCards(p){
+  var cards=[{label:'Registros Totales', value:fmtNum(p.meta.row_count), cls:''}];
+  var colorCycle=['g','b','o'];
+  var numCols=p.meta.columnas.numericas||[];
+  numCols.slice(0,5).forEach(function(col,i){
+    var s=p.numeric_summary[col];
+    if(!s) return;
+    cards.push({label:'Total '+col, value:fmtNum(s.sum), cls:colorCycle[i%colorCycle.length]});
+  });
+  var catCols=(p.meta.columnas.categoricas||[]).concat(p.meta.columnas.identificadores||[]);
+  if(catCols.length && cards.length<8){
+    var c0=catCols[0];
+    cards.push({label:c0+' (únicos)', value:fmtNum(p.meta.cardinalidades[c0]), cls:''});
+  }
+  return cards.slice(0,8);
+}
+
+function getDisplayKPICards(p){
+  if(!p) return [];
+  var cards=fmtKPICards(p.kpis_estandar||{});
+  if(!cards.length) cards=buildGenericFallbackCards(p);
+  return cards;
+}
+
+function rebuildProfile(showMsg){
+  if(!rawRows) return;
+  profile=buildProfile(rawRows,columns);
+  if(showMsg) showFileOk('Perfil recalculado con los tipos indicados.');
+}
+
+function getAvailableYears(){
+  var ys=[];
+  if(!profile) return ys;
+  Object.values(profile.date_summary||{}).forEach(function(ds){
+    (ds.years_available||[]).forEach(function(y){if(ys.indexOf(y)===-1)ys.push(y);});
+  });
+  return ys.sort();
+}
+
+function buildDataContext(p){
+  p=p||profile;
+  var str=JSON.stringify(p);
+  if(str.length>55000){
+    var light=JSON.parse(JSON.stringify(p));
+    Object.values(light.date_summary||{}).forEach(function(ds){ds.by_month=null;});
+    Object.keys(light.categorical_summary||{}).forEach(function(col){
+      var entries=Object.entries(light.categorical_summary[col]).slice(0,10);
+      var o={};entries.forEach(function(e){o[e[0]]=e[1];});
+      light.categorical_summary[col]=o;
+    });
+    str=JSON.stringify(light);
+  }
+  return str;
+}
+
+// ─── SUGERENCIAS DINÁMICAS ────────────────────────────────────────────────────
+function generateDynamicHints(){
+  var numCols=columns.filter(function(c){return c.type==='numeric';}).map(function(c){return c.name;});
+  var catCols=columns.filter(function(c){return c.type==='categorical';}).map(function(c){return c.name;});
+  var dateCols=columns.filter(function(c){return c.type==='date';}).map(function(c){return c.name;});
+
+  var qh=[];
+  if(catCols[0]&&numCols[0]) qh.push('¿Cuál es el top 5 de '+catCols[0]+' según '+numCols[0]+'?');
+  if(catCols[1]&&numCols[0]) qh.push('¿Qué '+catCols[1]+' tiene el valor más bajo de '+numCols[0]+'?');
+  if(dateCols[0]&&numCols[0]) qh.push('¿Cómo evolucionó '+numCols[0]+' a lo largo del tiempo?');
+  if(numCols[0]) qh.push('¿Cuál es el promedio y el total de '+numCols[0]+'?');
+  if(catCols[0]) qh.push('¿Cómo se distribuyen los registros por '+catCols[0]+'?');
+  if(numCols[1]) qh.push('Compara '+numCols[0]+' y '+numCols[1]+' por '+(catCols[0]||'categoría')+'.');
+  if(!qh.length) qh.push('Dame un resumen general de este dataset.');
+  document.getElementById('qhints').innerHTML=qh.map(function(q){return '<button class="hint" onclick="hq(this)">'+q+'</button>';}).join('');
+
+  var rh=['Reporte ejecutivo completo (todas las secciones)'];
+  if(catCols[0]) rh.push('Análisis por '+catCols[0]);
+  if(dateCols[0]) rh.push('Tendencia en el tiempo');
+  if(numCols.length>1) rh.push('Comparativa entre '+numCols.slice(0,2).join(' y '));
+  if(catCols[1]) rh.push('Rentabilidad/desempeño por '+catCols[0]+' y '+catCols[1]);
+  document.getElementById('phints').innerHTML=rh.map(function(q){return '<button class="hint" onclick="hp(this)">'+q+'</button>';}).join('');
+}
+
 // ─── CONSULTA RÁPIDA ──────────────────────────────────────────────────────────
-var SYSPROMPT_ASK = `Eres un asistente experto en reportes ejecutivos de retail sobre el dataset "Superstore".
-Procesas las solicitudes con enfoque corporativo y de negocio, siempre ancladas a los datos del sector.
-Dispones de la herramienta generar_reporte_superstore(año, dimension, tipo_reporte, filtros),
-que ejecuta un script de análisis sobre los datos reales. Tú NO calculas cifras: las obtienes de esa herramienta.
-Para cada mensaje, actúa como orquestador (cerebro decisor) y decide:
-1. SOLICITUD DE REPORTE O ANÁLISIS DE DATOS:
-   - Extrae de la petición los parámetros (año, dimensión, tipo de reporte, filtros).
-   - Si falta un parámetro esencial o la petición es ambigua, pide UNA aclaración breve antes de ejecutar.
-   - Si están claros, llama a generar_reporte_superstore() con esos parámetros.
-   - Redacta el reporte usando ÚNICAMENTE las cifras devueltas por la herramienta.
-     No inventes, no estimes ni completes datos que no estén en la salida del script.
-     Si un dato no está disponible, dilo explícitamente.
-   - Entrega métricas de retail (ventas, margen, categorías, regiones...) y conclusiones accionables.
-2. PREGUNTA DE CONTEXTO O TEORÍA DE RETAIL:
-   - Responde de forma conversacional, con conocimiento de retail y gestión de tiendas,
-     orientando el concepto hacia el tipo de datos de un entorno como Superstore.
-   - No llames a la herramienta.
-3. PREGUNTA FUERA DE TEMA:
-   - No respondas la consulta general. Redirige con amabilidad, recordando que tu rol es ser
-     experto en reportes ejecutivos de retail sobre el dataset Superstore.
-Tono profesional, ejecutivo, claro y estratégico. Evita respuestas genéricas de propósito general.
+var SYSPROMPT_ASK = `Eres un analista de datos experto en Business Intelligence. El usuario cargó un dataset propio (de cualquier dominio: ventas, salud, educación, RRHH, operaciones, etc.) y tú recibes el PERFIL ESTADÍSTICO AGREGADO de ese dataset: columnas detectadas por tipo (numéricas, fechas, categóricas), sumas, promedios, mínimos/máximos, y agrupaciones por categoría y por fecha. NO tienes las filas crudas, solo este perfil agregado.
+
+Para cada mensaje, actúa como orquestador y decide:
+1. SOLICITUD DE ANÁLISIS DE DATOS: si la pregunta se puede responder EXCLUSIVAMENTE con cifras del perfil dado, respóndela con esas cifras exactas. Nunca inventes, estimes o completes datos que no estén en el perfil.
+2. CONTEOS DE ENTIDADES VS. FILAS: meta.row_count es el total de FILAS, que puede incluir varias filas por una misma entidad (ej. varias líneas para un mismo pedido). Si la pregunta pide "número de pedidos", "clientes únicos" u otro conteo de entidad identificada por una columna, usa meta.cardinalidades[nombre_columna] (conteo exacto de valores únicos), nunca meta.row_count para eso.
+3. TIEMPOS ENTRE FECHAS: si existe date_diff_summary y la pregunta trata sobre "tiempo de entrega", "lead time" o diferencias entre fechas, usa el avg_dias correspondiente.
+4. DATO NO DISPONIBLE: si la pregunta requiere una columna, categoría o agregación que no está en el perfil (por ejemplo, una columna marcada como identificador, o una categoría fuera del top incluido), dilo explícitamente y sugiere una pregunta similar que sí se pueda responder.
+5. PREGUNTA CONCEPTUAL/TEÓRICA: respóndela con conocimiento general de analítica de negocio, sin inventar cifras del dataset.
+6. FUERA DE TEMA: redirige con amabilidad, indicando que tu rol es analizar el dataset cargado.
+Tono profesional, ejecutivo, claro y estratégico.
 
 ---
-ROL TÉCNICO ADICIONAL: Recibirás el dataset completo en JSON junto con la pregunta del usuario.
-La "herramienta" generar_reporte_superstore() en este contexto está representada por los datos del JSON provisto.
-RESPONDE SOLO CON JSON VÁLIDO, sin texto extra ni backticks.
-
-Estructura de respuesta:
+RESPONDE SOLO CON JSON VÁLIDO, sin texto extra ni backticks. Estructura:
 {
   "titulo": "Título breve de la respuesta (máx 8 palabras)",
-  "resumen": "2-3 oraciones ejecutivas con tono corporativo respondiendo directamente la pregunta con cifras exactas del dataset.",
+  "resumen": "2-3 oraciones ejecutivas con tono corporativo respondiendo directamente la pregunta con cifras exactas del perfil.",
   "tiene_tabla": true/false,
   "tabla": {
     "headers": ["Col1","Col2","Col3"],
-    "tipos": ["texto","$","$","%"],
-    "rows": [["valor","1234.56","567.89","12.34"], ...],
+    "tipos": ["texto","numero","moneda","porcentaje","rank"],
+    "moneda_simbolo": "$",
+    "rows": [["valor","1234.56","567.89"], ...],
     "positivo_col": 1,
     "caption": "Descripción breve de la tabla"
   },
   "conclusiones": ["Conclusión accionable 1 con cifra.", "Conclusión accionable 2 con cifra.", "Conclusión accionable 3 con cifra."]
 }
+REGLAS: usa siempre cifras exactas del perfil provisto. Para "top N" ordena y limita a N filas. Para "más bajo"/"mínimo" ordena ascendente. Si la pregunta no requiere tabla, pon tiene_tabla:false y tabla:null. conclusiones: exactamente 3 puntos con cifras concretas, o [] si la pregunta está fuera de tema.`;
 
-REGLAS TÉCNICAS:
-- Usa SIEMPRE cifras exactas del dataset provisto. Nunca estimes ni inventes datos.
-- Si la pregunta involucra un año específico (ej. 2017), filtra solo ese año de by_ym.
-- Para "top N", ordena correctamente y limita a N filas.
-- Para "más bajo" o "mínimo", ordena ascendente.
-- Para "pérdidas", filtra profit < 0.
-- Para subcategorías por año: escala usando la proporción del año sobre el total.
-- Si la pregunta no requiere tabla (ej. comparación simple), pon tiene_tabla: false y tabla: null.
-- conclusiones: exactamente 3 puntos con cifras concretas y orientación accionable.
-- Si la pregunta es de teoría de retail (no requiere datos), pon resumen con la respuesta conceptual, tiene_tabla: false, tabla: null, conclusiones con 3 puntos orientadores.
-- Si la pregunta está fuera del tema de retail/Superstore, pon resumen con redirección amable y conclusiones vacías: [].`;
+async function callClaudeForJSON(ak,system,msg,maxTokens,onRetry){
+  var lastErr=null;
+  for(var attempt=1;attempt<=2;attempt++){
+    var res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':ak,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:maxTokens,system:system,messages:[{role:'user',content:msg}]})
+    });
+    if(!res.ok){var e=await res.json();throw new Error(e.error?e.error.message:'HTTP '+res.status);}
+    var data=await res.json();
+    if(data.stop_reason==='max_tokens'){
+      throw new Error('La respuesta se cortó por ser demasiado larga. Intenta una solicitud más específica o con menos secciones.');
+    }
+    var raw=data.content.filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('');
+    var clean=raw.replace(/```json/g,'').replace(/```/g,'').trim();
+    try{
+      return safeJsonParse(clean);
+    }catch(ex){
+      console.error('Respuesta cruda de Claude (intento '+attempt+'):',raw);
+      lastErr=ex;
+      if(attempt===1 && onRetry) onRetry();
+    }
+  }
+  throw new Error('JSON inválido recibido tras reintentar. Fragmento de la respuesta: '+(lastErr.rawSnippet||''));
+}
 
 async function ask(){
-  var q = document.getElementById('qp').value.trim();
-  var ak = getAK();
+  var q=document.getElementById('qp').value.trim();
+  var ak=getAK();
+  if(!rawRows) return showQErr('Primero sube una base de datos.');
   if(!q) return showQErr('Escribe una pregunta.');
   if(!ak||!ak.startsWith('sk-')) return showQErr('API Key inválida. Debe empezar con sk-');
 
-  // Validar años
-  var yrs = q.match(/\b(20\d{2})\b/g);
-  if(yrs){
-    var invalid = yrs.filter(function(y){return !['2014','2015','2016','2017'].includes(y);});
-    if(invalid.length) return showQErr('El dataset solo contiene 2014–2017. Año inválido: '+invalid.join(', '));
+  var avail=getAvailableYears();
+  if(avail.length){
+    var yrs=q.match(/\b(19|20)\d{2}\b/g);
+    if(yrs){
+      var inv=yrs.filter(function(y){return avail.indexOf(y)===-1;});
+      if(inv.length) return showQErr('Los datos disponibles cubren los años '+avail.join(', ')+'. Año fuera de rango: '+inv.join(', '));
+    }
   }
 
   setQSt(true,'Analizando datos...');
   hideQErr();
-
-  // Contexto completo del dataset
-  var ctx = 'DATASET COMPLETO:\n'+JSON.stringify({
-    global:{sales:S.total_sales,profit:S.total_profit,qty:S.total_qty,orders:S.unique_orders,customers:S.unique_customers,margin:S.margin},
-    by_year:S.by_year,
-    by_ym:S.by_ym,
-    by_cat:S.by_cat,
-    by_sub:S.by_sub,
-    by_region:S.by_region,
-    by_seg:S.by_seg,
-    by_disc:S.by_disc,
-    by_ship:S.by_ship,
-    top_customers:S.top_customers,
-    orders_by_year:OBY
-  });
-
-  var msg = ctx + '\n\nPREGUNTA: ' + q + '\n\nResponde con JSON.';
+  var msg='PERFIL DEL DATASET:\n'+buildDataContext()+'\n\nPREGUNTA: '+q+'\n\nResponde con JSON.';
 
   try{
-    var res = await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'x-api-key':ak,
-        'anthropic-version':'2023-06-01',
-        'anthropic-dangerous-direct-browser-access':'true'
-      },
-      body:JSON.stringify({
-        model:'claude-sonnet-4-6',
-        max_tokens:2000,
-        system:SYSPROMPT_ASK,
-        messages:[{role:'user',content:msg}]
-      })
-    });
-    if(!res.ok){var e=await res.json();throw new Error(e.error?e.error.message:'HTTP '+res.status);}
-    var data=await res.json();
-    var raw=data.content.filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('');
-    var clean=raw.replace(/```json/g,'').replace(/```/g,'').trim();
-    var parsed;
-    try{parsed=JSON.parse(clean);}
-    catch(ex){throw new Error('JSON inválido recibido.');}
+    var parsed=await callClaudeForJSON(ak,SYSPROMPT_ASK,msg,3000,function(){setQSt(true,'La respuesta vino con errores de formato, reintentando...');});
     setQSt(false);
-    renderAnswer(parsed, q);
+    renderAnswer(parsed,q);
   }catch(err){
     setQSt(false);
     showQErr('Error: '+err.message);
   }
 }
 
-var qHistory = [];
-
-function renderAnswer(d, q){
+var qHistory=[];
+function renderAnswer(d,q){
   qHistory.unshift({q:q,d:d});
   if(qHistory.length>5) qHistory.pop();
 
@@ -354,40 +793,34 @@ function renderAnswer(d, q){
   h+='<div class="q-answer-box">';
   h+='<div class="q-answer-hd"><span>'+d.titulo+'</span><small>'+new Date().toLocaleTimeString('es-CO')+'</small></div>';
   h+='<div class="q-answer-body">';
-
-  // Resumen
   h+='<p>'+d.resumen+'</p>';
 
-  // Tabla
   if(d.tiene_tabla && d.tabla){
     var t=d.tabla;
+    var simbolo=t.moneda_simbolo||'$';
     h+='<h3>'+t.caption+'</h3>';
     h+='<table class="q-tbl"><thead><tr>';
-    t.headers.forEach(function(hd,i){h+='<th>'+hd+'</th>';});
+    t.headers.forEach(function(hd){h+='<th>'+hd+'</th>';});
     h+='</tr></thead><tbody>';
-    t.rows.forEach(function(row,ri){
+    t.rows.forEach(function(row){
       h+='<tr>';
       row.forEach(function(cell,ci){
-        var tipo = (t.tipos&&t.tipos[ci])||'texto';
-        var cls='';
-        var val=cell;
-        if(tipo==='$'){
+        var tipo=(t.tipos&&t.tipos[ci])||'texto';
+        var cls='',val=cell;
+        if(tipo==='moneda'){
           var num=parseFloat(String(cell).replace(/[^0-9.\-]/g,''));
-          cls='num';
-          if(t.positivo_col===ci) cls+= num<0?' neg':' pos';
-          val=isNaN(num)?cell:fmt(num);
-        } else if(tipo==='%'){
+          cls='num';if(t.positivo_col===ci) cls+=num<0?' neg':' pos';
+          val=isNaN(num)?cell:simbolo+fmtNum(num);
+        }else if(tipo==='porcentaje'){
           var num=parseFloat(String(cell).replace(/[^0-9.\-]/g,''));
-          cls='num';
-          if(t.positivo_col===ci) cls+= num<0?' neg':' pos';
+          cls='num';if(t.positivo_col===ci) cls+=num<0?' neg':' pos';
           val=isNaN(num)?cell:num.toFixed(1)+'%';
-        } else if(tipo==='n'){
+        }else if(tipo==='numero'){
           var num=parseFloat(String(cell).replace(/[^0-9.\-]/g,''));
           cls='num';
-          val=isNaN(num)?cell:fmt(num,'n');
-        } else if(tipo==='rank'){
-          cls='rank';
-          val='#'+cell;
+          val=isNaN(num)?cell:fmtNum(num);
+        }else if(tipo==='rank'){
+          cls='rank';val='#'+cell;
         }
         h+='<td class="'+cls.trim()+'">'+val+'</td>';
       });
@@ -396,7 +829,6 @@ function renderAnswer(d, q){
     h+='</tbody></table>';
   }
 
-  // Conclusiones
   if(d.conclusiones && d.conclusiones.length){
     h+='<h3>Conclusiones clave</h3><ul style="list-style:disc;padding-left:20px;margin-top:4px">';
     d.conclusiones.forEach(function(c){h+='<li style="margin-bottom:5px;font-size:12.5px;color:#1e293b">'+c+'</li>';});
@@ -404,10 +836,9 @@ function renderAnswer(d, q){
   }
 
   h+='</div>';
-  h+='<div class="q-source">Fuente: Sample Superstore 2014–2017 · 8,680 registros · Pregunta: "'+q+'"</div>';
+  h+='<div class="q-source">Fuente: '+(datasetName||'dataset cargado')+' · '+(profile?profile.meta.row_count.toLocaleString('es-CO'):'')+' registros · Pregunta: "'+q+'"</div>';
   h+='</div>';
 
-  // Historial
   if(qHistory.length>1){
     h+='<div style="margin-top:8px"><div class="lbl" style="margin-bottom:6px">Consultas anteriores</div><div class="q-hist">';
     qHistory.slice(1).forEach(function(it,i){
@@ -420,6 +851,47 @@ function renderAnswer(d, q){
   qrw.innerHTML=h;
   qrw.classList.add('vis');
   qrw.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function jsonErrorSnippet(str,e){
+  var m=/position (\d+)/.exec(e&&e.message||'');
+  if(m){
+    var pos=parseInt(m[1],10);
+    var s=Math.max(0,pos-150), en=Math.min(str.length,pos+150);
+    return '…'+str.slice(s,en)+'… (el error ocurre cerca de la posición '+pos+' de la respuesta)';
+  }
+  return str.length>400?(str.slice(0,250)+' […] '+str.slice(-150)):str;
+}
+
+function safeJsonParse(str){
+  // Paso 0: los saltos de línea/tabs sueltos DENTRO de un valor de texto no son válidos en JSON
+  // estricto (deben ir escapados como \n). Se normalizan a espacios, que sí son válidos en
+  // cualquier posición (dentro o fuera de un string), sin alterar la estructura del JSON.
+  var normalized=str.replace(/[\u0000-\u001F]+/g,' ');
+  // Paso 0.5: repara el patrón "clave"> (falta ": " antes del valor, típico cuando el valor
+  // empieza con una etiqueta HTML como <strong> y el modelo se salta los dos puntos y la comilla).
+  normalized=normalized.replace(/"([a-zA-Z_]+)"\s*>/g,'"$1": "');
+  try{ return JSON.parse(normalized); }catch(e){}
+  try{ return JSON.parse(str); }catch(e){}
+
+  var base=normalized;
+  var start=base.indexOf('{'), end=base.lastIndexOf('}');
+  if(start!==-1 && end!==-1 && end>start){
+    var sub=base.slice(start,end+1);
+    try{ return JSON.parse(sub); }catch(e){}
+    var noTrailing=sub.replace(/,(\s*[}\]])/g,'$1');
+    try{ return JSON.parse(noTrailing); }catch(e){}
+    var smartQuotes=noTrailing.replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"');
+    try{ return JSON.parse(smartQuotes); }
+    catch(e){
+      var err=new Error('no parseable');
+      err.rawSnippet=jsonErrorSnippet(smartQuotes,e);
+      throw err;
+    }
+  }
+  var err2=new Error('no parseable');
+  err2.rawSnippet=str.length>400?(str.slice(0,250)+' […] '+str.slice(-150)):str;
+  throw err2;
 }
 
 function reloadQ(idx){
@@ -438,151 +910,172 @@ function hideQErr(){document.getElementById('qeb').classList.remove('vis');}
 function hq(el){document.getElementById('qp').value=el.textContent.trim();}
 
 // ─── REPORTE COMPLETO ─────────────────────────────────────────────────────────
-var SYSPROMPT = `Eres un asistente experto en reportes ejecutivos de retail sobre el dataset "Superstore".
-Procesas las solicitudes con enfoque corporativo y de negocio, siempre ancladas a los datos del sector.
-Dispones de la herramienta generar_reporte_superstore(año, dimension, tipo_reporte, filtros),
-que ejecuta un script de análisis sobre los datos reales. Tú NO calculas cifras: las obtienes de esa herramienta.
-Actúa como orquestador: extrae parámetros (año, dimensión, tipo de reporte, filtros) de la petición,
-y genera el reporte usando ÚNICAMENTE las cifras provistas. No inventes, no estimes ni completes datos.
-Entrega métricas de retail (ventas, margen, categorías, regiones...) y conclusiones accionables.
-Tono profesional, ejecutivo, claro y estratégico.
+var SYSPROMPT = `Eres un analista de datos experto en Business Intelligence encargado de generar reportes ejecutivos a partir del PERFIL ESTADÍSTICO AGREGADO de un dataset cargado por el usuario (de cualquier dominio: ventas, salud, educación, RRHH, operaciones, etc.). Usa EXCLUSIVAMENTE las cifras del perfil provisto. No inventes ni estimes datos que no estén ahí.
 
----
-ROL TÉCNICO: Genera un reporte ejecutivo en JSON. RESPONDE SOLO CON JSON VALIDO sin texto extra ni backticks.
-Estructura requerida: {"report_subtitle":"string","kpi_narrative":"2 oraciones ejecutivas corporativas sobre lo solicitado","kpis":{"ventas":"$XXX","ganancia":"$XXX","margen":"XX%","ticket":"$XXX","pedidos":"X,XXX","clientes":"XXX","unidades":"XX,XXX","lead_time":"X.XX d"},"sections":[{"priority":"CRITICO","num":2,"title":"string","chart_id":"chart_tendencia","insight":"HTML con <strong>. Minimo 3 oraciones con cifras reales y conclusiones accionables."}]}.
-REGLAS CRITICAS: (1) Un tema->1 seccion. (2) 2-3 temas->esas secciones. (3) Reporte completo->5 secciones. (4) kpis del periodo solicitado. (5) chart_id validos: chart_tendencia, chart_mensual, chart_cat, chart_region, chart_sub, chart_seg, chart_orders, chart_ship, chart_descuento. (6) priority: CRITICO, ALTO o MEDIO. (7) Adapta chart_id al tema. (8) Insights con tono ejecutivo-corporativo y recomendaciones accionables basadas solo en datos reales provistos.`;
+IMPORTANTE SOBRE KPIS: el perfil incluye un objeto "kpis_estandar" con hasta 8 indicadores YA CALCULADOS por el sistema (ventas_totales, ganancia_total, margen_pct, ticket_promedio, pedidos, clientes, unidades, lead_time_dias; un valor null significa que el dataset no tiene una columna equivalente). Solo se muestran en el reporte los que NO sean null; tú NO los generas ni los recalculas, solo redactas el "kpi_narrative" citando esas cifras exactas (ignora los que sean null). Si TODOS son null (dataset sin columnas de tipo ventas/pedidos/clientes, ej. un directorio, un dataset de salud o educación), en vez de mencionar la ausencia de KPIs de ventas, redacta el "kpi_narrative" usando las cifras generales relevantes que sí existan en el perfil (meta.row_count, sumas o promedios de numeric_summary, cardinalidad de columnas categóricas clave).
+
+NOTA SOBRE EL PERIODO: si la solicitud del usuario menciona un año o periodo específico, el perfil que recibes YA viene filtrado a ese periodo (incluyendo kpis_estandar, numeric_summary, categorical_summary, etc.). No necesitas filtrar nada tú mismo: todas las cifras del perfil corresponden exactamente al alcance solicitado.
+
+RESPONDE SOLO CON JSON VÁLIDO, sin texto extra ni backticks. Estructura:
+{
+  "report_subtitle": "string descriptivo del alcance del reporte",
+  "kpi_narrative": "2 oraciones ejecutivas corporativas citando las cifras exactas de kpis_estandar (omite los que sean null)",
+  "sections": [
+    {
+      "priority": "CRITICO|ALTO|MEDIO",
+      "num": 1,
+      "title": "string",
+      "insight": "HTML con <strong>. Entre 3 y 5 oraciones con cifras reales y conclusiones accionables (no más de 5).",
+      "chart": {
+        "type": "bar|line|doughnut|pie",
+        "horizontal": true/false,
+        "labels": ["... máximo 12 etiquetas, elige las más relevantes si hay más disponibles"],
+        "datasets": [{"label":"...", "data":[123,456]}]
+      }
+    }
+  ]
+}
+REGLAS CRÍTICAS:
+(1) IMPORTANTE - conteos de entidades vs. filas: meta.row_count es el número total de FILAS (puede haber varias filas por pedido/entidad). Si necesitas "número de pedidos", "número de clientes", "número de productos únicos" u otro conteo de una entidad identificada por una columna categórica o identificadora, usa el valor exacto en meta.cardinalidades[nombre_columna] (conteo de valores únicos de esa columna), NUNCA uses meta.row_count para eso salvo que row_count sea realmente lo que se pide.
+(2) Si existe date_diff_summary (diferencia en días entre columnas de fecha, ej. fecha de pedido vs. fecha de envío), úsalo para cualquier insight sobre "tiempo de entrega", "lead time" o similar, usando avg_dias exactamente como viene.
+(3) Si el usuario pide un tema específico -> 1-2 secciones sobre ese tema. Si pide "reporte completo" -> 4-6 secciones cubriendo lo más relevante del perfil (categorías principales, tendencia temporal si existe, distribución, comparaciones).
+(4) Cada "chart" debe construirse EXCLUSIVAMENTE con labels y valores que existan en categorical_summary o date_summary del perfil. Nunca inventes categorías ni cifras.
+(5) Si el perfil no tiene date_summary (no hay columnas de fecha), no generes secciones de tendencia temporal.
+(6) "horizontal":true es recomendable cuando hay más de 6 categorías en el eje.
+(7) Tono ejecutivo con recomendaciones accionables basadas solo en datos reales del perfil.`;
 
 async function gen(){
   var prompt=document.getElementById('up').value.trim();
   var ak=getAK();
+  if(!rawRows) return showErr('Primero sube una base de datos.');
   if(!prompt) return showErr('Escribe un prompt.');
   if(!ak||!ak.startsWith('sk-')) return showErr('API Key inválida. Debe empezar con sk-');
-  var yrs=prompt.match(/\b(20\d{2})\b/g);
-  if(yrs){
-    var inv=yrs.filter(function(y){return!['2014','2015','2016','2017'].includes(y);});
-    if(inv.length) return showErr('El dataset solo contiene datos de 2014–2017. Año inválido: '+inv.join(', '));
+
+  var avail=getAvailableYears();
+  var yrs=prompt.match(/\b(19|20)\d{2}\b/g);
+  if(avail.length && yrs){
+    var inv=yrs.filter(function(y){return avail.indexOf(y)===-1;});
+    if(inv.length) return showErr('Los datos disponibles cubren los años '+avail.join(', ')+'. Año fuera de rango: '+inv.join(', '));
   }
+
+  // Si el prompt menciona uno o más años específicos, se recalcula el perfil (y por lo tanto
+  // los 8 KPIs y los gráficos) solo con las filas de esos años, en vez de usar todo el dataset.
+  var reportProfile=profile;
+  if(yrs && yrs.length && profile.meta.columnas.fechas.length){
+    var yrsSet={}; yrs.forEach(function(y){yrsSet[y]=true;});
+    var primaryDateCol=pickPrimaryDateCol(profile.meta.columnas.fechas);
+    var filteredRows=rawRows.filter(function(r){
+      var d=parseDateVal(r[primaryDateCol]);
+      return d && yrsSet[String(d.getFullYear())];
+    });
+    if(filteredRows.length) reportProfile=buildProfile(filteredRows,columns);
+  }
+
   setSt(true,'Consultando Claude...');
   hideErr();
-  var ctx=['DATASET: Sample Superstore 2014-2017 | 8680 registros','GLOBAL: Ventas=$844K Profit=$117K Margen=13.81% Ordenes=4683 Clientes=790 Ticket=$180 LeadTime=3.96d Unidades=31150','ANUAL: 2014=$173K/+$23.6K/912ped/572cli | 2015=$181K/+$26.4K/971ped/555cli | 2016=$210K/+$29K/1218ped/618cli | 2017=$279K/+$37.6K/1582ped/677cli','CATS: OfficeSupplies=$327K/marg20.2% | Furniture=$284K/marg6.1% | Technology=$233K/marg14.3%','REGIONES: West=$315K/15.4% | East=$215K/14.6% | Central=$182K/9.0% | South=$132K/15.3%','SEGS: Consumer=53.7%/$453K | Corporate=29.3%/$247K | HomeOffice=17%/$143K','SUBCATS: Paper=$26.5K | Accessories=$16.8K | Phones=$15.1K | Furnishings=$11.9K | Appliances=$8.2K | Tables=-$286(perdida)','DESCUENTOS: 0%->marg26.6% | 1-20%->marg9.8% | 21-40%->marg-9.5% | >40%->marg-80.6%','ENVIO: Standard=59.6% | Second=19.4% | First=15.6% | SameDay=5.4%','ESTACIONAL: picos Nov/Dic/Sep, valles Ene/Feb. Maximo: Nov2017=$39K'].join('\n');
-  var msg='DATOS:\n'+ctx+'\n\nSOLICITUD: '+prompt+'\n\nGenera el JSON del reporte.';
+  var msg='PERFIL DEL DATASET (ya filtrado al período solicitado si aplica):\n'+buildDataContext(reportProfile)+'\n\nSOLICITUD: '+prompt+'\n\nGenera el JSON del reporte.';
+
   try{
-    var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':ak,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:4000,system:SYSPROMPT,messages:[{role:'user',content:msg}]})});
-    if(!res.ok){var e=await res.json();throw new Error(e.error?e.error.message:'HTTP '+res.status);}
-    var data=await res.json();
-    var raw=data.content.filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('');
-    var clean=raw.replace(/```json/g,'').replace(/```/g,'').trim();
-    var parsed;
-    try{parsed=JSON.parse(clean);}catch(ex){throw new Error('JSON inválido recibido.');}
+    var parsed=await callClaudeForJSON(ak,SYSPROMPT,msg,8000,function(){setSt(true,'La respuesta vino con errores de formato, reintentando...');});
     setSt(false);
-    var yrsF=prompt.match(/\b(2014|2015|2016|2017)\b/g)||[];
-    renderReport(parsed,yrsF.filter(function(v,i,a){return a.indexOf(v)===i;}));
+    renderReport(parsed,reportProfile);
   }catch(err){setSt(false);showErr('Error: '+err.message);}
 }
 
-// ─── CHARTS ───────────────────────────────────────────────────────────────────
+// ─── CHARTS GENÉRICOS ─────────────────────────────────────────────────────────
 var charts={};
 function killCharts(){Object.values(charts).forEach(function(c){try{c.destroy();}catch(e){}});charts={};}
 var gx={grid:{color:'#f1f5f9'},ticks:{font:{size:10}}};
-var gy={grid:{color:'#f1f5f9'},ticks:{font:{size:10},callback:function(v){return fmt(v);}}};
+var gy={grid:{color:'#f1f5f9'},ticks:{font:{size:10},callback:function(v){return fmtNum(v);}}};
 var TT={backgroundColor:'white',borderColor:'#e2e8f0',borderWidth:1,titleColor:'#0f172a',bodyColor:'#475569',padding:10};
-function mkC(id,cfg){var cv=document.getElementById(id);if(!cv)return;charts[id]=new Chart(cv,cfg);}
+var PALETTE=['#1e3a5f','#2563eb','#16a34a','#d97706','#dc2626','#7c3aed','#0891b2','#93c5fd','#f97316','#14b8a6'];
 
-function filterByYears(years){
-  var all=['2014','2015','2016','2017'];
-  var yrs=years.length?years:all;
-  var byYear={};yrs.forEach(function(y){if(S.by_year[y])byYear[y]=S.by_year[y];});
-  var byYm={};Object.entries(S.by_ym).forEach(function(e){if(yrs.includes(e[0].split('-')[0]))byYm[e[0]]=e[1];});
-  var oby={};yrs.forEach(function(y){if(OBY[y])oby[y]=OBY[y];});
-  var totalSales=Object.values(byYear).reduce(function(a,v){return a+v.sales;},0);
-  var ratio=S.total_sales>0?totalSales/S.total_sales:1;
-  var byCat={};Object.entries(S.by_cat).forEach(function(e){byCat[e[0]]={sales:e[1].sales*ratio,profit:e[1].profit*ratio};});
-  var byRegion={};Object.entries(S.by_region).forEach(function(e){byRegion[e[0]]={sales:e[1].sales*ratio,profit:e[1].profit*ratio};});
-  var bySeg={};Object.entries(S.by_seg).forEach(function(e){bySeg[e[0]]={sales:e[1].sales*ratio,profit:e[1].profit*ratio};});
-  var bySub={};Object.entries(S.by_sub).forEach(function(e){bySub[e[0]]={sales:e[1].sales*ratio,profit:e[1].profit*ratio};});
-  return{by_year:byYear,by_ym:byYm,oby:oby,by_cat:byCat,by_region:byRegion,by_seg:bySeg,by_sub:bySub,by_disc:S.by_disc,by_ship:S.by_ship};
-}
+function mkGenericChart(canvasId,spec){
+  var cv=document.getElementById(canvasId); if(!cv||!spec) return;
+  var type=spec.type==='pie'?'pie':(spec.type||'bar');
+  var isPie=(type==='doughnut'||type==='pie');
+  var labels=spec.labels||[];
+  var horizontal=!!spec.horizontal || (type==='bar' && labels.length>6);
 
-function buildCharts(sections,filteredData){
-  var D=filteredData;
-  sections.forEach(function(sec){
-    var id=sec.chart_id;
-    if(id==='chart_tendencia'){
-      var yrs=Object.keys(D.by_year);
-      if(yrs.length===1){
-        var mths=Object.entries(D.by_ym).sort(function(a,b){return a[0]<b[0]?-1:1;});
-        mkC(id,{type:'line',data:{labels:mths.map(function(m){return m[0].slice(5);}),datasets:[{label:'Ventas',data:mths.map(function(m){return m[1].sales;}),borderColor:'#2563eb',backgroundColor:'rgba(37,99,235,.08)',fill:true,tension:.4,yAxisID:'y',pointRadius:4,pointBackgroundColor:'#2563eb'},{label:'Ganancia',data:mths.map(function(m){return m[1].profit;}),borderColor:'#16a34a',backgroundColor:'rgba(22,163,74,.08)',fill:true,tension:.4,yAxisID:'y2',pointRadius:4,pointBackgroundColor:'#16a34a',borderDash:[6,3]}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top'},tooltip:Object.assign({},TT,{callbacks:{label:function(c){return' '+fmt(c.raw);}}})},scales:{y:Object.assign({},gy,{position:'left'}),y2:Object.assign({},gy,{position:'right',grid:{display:false}})}}});
-      }else{
-        mkC(id,{type:'line',data:{labels:yrs,datasets:[{label:'Ventas',data:yrs.map(function(y){return D.by_year[y].sales;}),borderColor:'#2563eb',backgroundColor:'rgba(37,99,235,.08)',fill:true,tension:.4,yAxisID:'y',pointRadius:5,pointBackgroundColor:'#2563eb'},{label:'Ganancia',data:yrs.map(function(y){return D.by_year[y].profit;}),borderColor:'#16a34a',backgroundColor:'rgba(22,163,74,.08)',fill:true,tension:.4,yAxisID:'y2',pointRadius:5,pointBackgroundColor:'#16a34a',borderDash:[6,3]}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top'},tooltip:Object.assign({},TT,{callbacks:{label:function(c){return' '+fmt(c.raw);}}})},scales:{y:Object.assign({},gy,{position:'left'}),y2:Object.assign({},gy,{position:'right',grid:{display:false}})}}});
-      }
-    }else if(id==='chart_mensual'){
-      var mths=Object.entries(D.by_ym).sort(function(a,b){return a[0]<b[0]?-1:1;});
-      var vals=mths.map(function(m){return m[1].sales;});
-      var top3=vals.map(function(v,i){return{v:v,i:i};}).sort(function(a,b){return b.v-a.v;}).slice(0,3).map(function(x){return x.i;});
-      mkC(id,{type:'line',data:{labels:mths.map(function(m){return m[0];}),datasets:[{label:'Ventas',data:vals,borderColor:'#2563eb',pointBackgroundColor:vals.map(function(_,i){return top3.includes(i)?'#dc2626':'#2563eb';}),pointRadius:vals.map(function(_,i){return top3.includes(i)?6:2;}),fill:false,tension:.35}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:Object.assign({},TT,{callbacks:{label:function(c){return' '+fmt(c.raw);}}})},scales:{x:Object.assign({},gx,{ticks:{maxTicksLimit:12,font:{size:9}}}),y:gy}}});
-    }else if(id==='chart_cat'){
-      var cats=Object.keys(D.by_cat);
-      mkC(id,{type:'bar',data:{labels:cats,datasets:[{label:'Ventas',data:cats.map(function(c){return D.by_cat[c].sales;}),backgroundColor:'rgba(37,99,235,.8)',borderRadius:4,borderSkipped:false},{label:'Ganancia',data:cats.map(function(c){return D.by_cat[c].profit;}),backgroundColor:'rgba(22,163,74,.8)',borderRadius:4,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom'},tooltip:Object.assign({},TT,{callbacks:{label:function(c){return' '+fmt(c.raw);}}})},scales:{x:Object.assign({},gx,{ticks:{callback:function(v){return fmt(v);}}}),y:gx}}});
-    }else if(id==='chart_region'){
-      var regs=Object.keys(D.by_region);
-      mkC(id,{type:'bar',data:{labels:regs,datasets:[{label:'Ventas',data:regs.map(function(r){return D.by_region[r].sales;}),backgroundColor:'rgba(37,99,235,.8)',borderRadius:4,borderSkipped:false},{label:'Ganancia',data:regs.map(function(r){return D.by_region[r].profit;}),backgroundColor:'rgba(22,163,74,.8)',borderRadius:4,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom'},tooltip:Object.assign({},TT,{callbacks:{label:function(c){return' '+fmt(c.raw);}}})},scales:{x:Object.assign({},gx,{ticks:{callback:function(v){return fmt(v);}}}),y:gx}}});
-    }else if(id==='chart_sub'){
-      var subs=Object.entries(D.by_sub).sort(function(a,b){return b[1].profit-a[1].profit;});
-      mkC(id,{type:'bar',data:{labels:subs.map(function(s){return s[0];}),datasets:[{label:'Ganancia',data:subs.map(function(s){return s[1].profit;}),backgroundColor:subs.map(function(s){return s[1].profit>2000?'rgba(22,163,74,.8)':s[1].profit>0?'rgba(217,119,6,.8)':'rgba(220,38,38,.8)';}),borderRadius:4,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:Object.assign({},TT,{callbacks:{label:function(c){return' '+fmt(c.raw);}}})},scales:{x:Object.assign({},gx,{ticks:{callback:function(v){return fmt(v);}}}),y:Object.assign({},gx,{ticks:{font:{size:10}}})}}});
-    }else if(id==='chart_seg'){
-      var segs=Object.keys(D.by_seg);
-      var tot=segs.reduce(function(a,k){return a+D.by_seg[k].sales;},0);
-      mkC(id,{type:'doughnut',data:{labels:segs.map(function(k){return k+': '+fmt(D.by_seg[k].sales)+' ('+(tot>0?(D.by_seg[k].sales/tot*100).toFixed(1):0)+'%)';}),datasets:[{data:segs.map(function(k){return D.by_seg[k].sales;}),backgroundColor:['#1e3a5f','#2563eb','#93c5fd'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'right',labels:{font:{size:11},padding:12}},tooltip:Object.assign({},TT,{callbacks:{label:function(c){return' '+fmt(c.raw);}}})}}});
-    }else if(id==='chart_orders'){
-      var yrs2=Object.keys(D.oby);
-      mkC(id,{type:'bar',data:{labels:yrs2,datasets:[{label:'Pedidos',data:yrs2.map(function(y){return D.oby[y].orders;}),backgroundColor:'rgba(30,58,95,.85)',borderRadius:4,borderSkipped:false,yAxisID:'y'},{label:'Clientes',data:yrs2.map(function(y){return D.oby[y].customers;}),backgroundColor:'rgba(147,197,253,.85)',borderRadius:4,borderSkipped:false,yAxisID:'y2'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top'},tooltip:TT},scales:{y:Object.assign({},gy,{position:'left'}),y2:{position:'right',grid:{display:false},ticks:{font:{size:10}}}}}});
-    }else if(id==='chart_ship'){
-      var modes=Object.keys(S.by_ship);
-      var totS=modes.reduce(function(a,k){return a+S.by_ship[k].count;},0);
-      mkC(id,{type:'bar',data:{labels:modes,datasets:[{label:'% pedidos',data:modes.map(function(k){return+(S.by_ship[k].count/totS*100).toFixed(1);}),backgroundColor:'rgba(37,99,235,.8)',borderRadius:4,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:Object.assign({},TT,{callbacks:{label:function(c){return' '+c.raw+'%';}}})},scales:{x:Object.assign({},gx,{ticks:{callback:function(v){return v+'%';}},max:70}),y:gx}}});
-    }else if(id==='chart_descuento'){
-      var bks=Object.keys(S.by_disc);
-      var mgs=bks.map(function(k){return S.by_disc[k].sales>0?+(S.by_disc[k].profit/S.by_disc[k].sales*100).toFixed(1):0;});
-      mkC(id,{type:'bar',data:{labels:bks,datasets:[{label:'Margen %',data:mgs,backgroundColor:mgs.map(function(m){return m<0?'rgba(220,38,38,.8)':'rgba(37,99,235,.8)';}),borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:Object.assign({},TT,{callbacks:{label:function(c){return' '+c.raw+'%';}}})},scales:{x:gx,y:Object.assign({},gy,{ticks:{callback:function(v){return v+'%';}}})}}});
+  var datasets=(spec.datasets||[]).map(function(ds,i){
+    var cfg={label:ds.label,data:ds.data};
+    if(isPie){
+      cfg.backgroundColor=labels.map(function(_,j){return PALETTE[j%PALETTE.length];});
+      cfg.borderWidth=0;
+    }else if(type==='line'){
+      cfg.borderColor=PALETTE[i%PALETTE.length];
+      cfg.backgroundColor=PALETTE[i%PALETTE.length]+'22';
+      cfg.fill=true;cfg.tension=.4;cfg.pointRadius=4;cfg.pointBackgroundColor=PALETTE[i%PALETTE.length];
+      if(i>0) cfg.borderDash=[6,3];
+    }else{
+      cfg.backgroundColor=PALETTE[i%PALETTE.length]+'CC';
+      cfg.borderRadius=4;cfg.borderSkipped=false;
+    }
+    return cfg;
+  });
+
+  var scales=isPie?{}:{x:Object.assign({},gx),y:Object.assign({},gy)};
+  if(!isPie && horizontal){scales={x:Object.assign({},gy),y:Object.assign({},gx)};}
+
+  charts[canvasId]=new Chart(cv,{
+    type:type,
+    data:{labels:labels,datasets:datasets},
+    options:{
+      indexAxis:(!isPie&&horizontal)?'y':'x',
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{display:(datasets.length>1)||isPie,position:isPie?'right':'top',labels:{font:{size:11}}},
+        tooltip:Object.assign({},TT,{callbacks:{label:function(c){
+          var v=Array.isArray(c.raw)?c.raw[0]:c.raw;
+          return ' '+(c.label&&isPie?c.label+': ':'')+fmtNum(v);
+        }}})
+      },
+      scales:scales
     }
   });
 }
 
-function renderReport(data,activeYears){
+function renderReport(data,profileForReport){
   killCharts();
-  var filteredData=filterByYears(activeYears||[]);
-  var authors='J. A. Arias · V. Chaux · K. D. Cañón';
-  var subtitle=data.report_subtitle||'Período 2014–2017 | 8,680 registros depurados';
-  var k=data.kpis||{};
-  var totalLT=Object.values(S.by_ship).reduce(function(a,v){return a+v.lead_time_sum;},0);
-  var totalSC=Object.values(S.by_ship).reduce(function(a,v){return a+v.count;},0);
-  var h='<div class="rh"><span>REPORTE EJECUTIVO · Sample Superstore 2014–2017</span><span>'+authors+'</span></div>';
+  var p=profileForReport||profile;
+  var title=(document.getElementById('projTitle').value.trim())||datasetName||'Dataset cargado';
+  var author=(document.getElementById('projAuthor').value.trim())||'Analista de datos';
+  var subtitle=data.report_subtitle||('Perfil de '+(p?p.meta.row_count.toLocaleString('es-CO'):'')+' registros');
+  var cards=getDisplayKPICards(p);
+
+  var h='<div class="rh"><span>REPORTE EJECUTIVO · '+title+'</span><span>'+author+'</span></div>';
   h+='<div class="rb">';
-  h+='<div class="rt"><h1>Reporte Ejecutivo · Sample Superstore</h1><p>'+subtitle+'</p></div>';
-  h+='<table class="kpi-tbl"><thead><tr><th>Ventas</th><th>Ganancia</th><th>Margen</th><th>Ticket prom.</th><th>Pedidos</th><th>Clientes</th><th>Unidades</th><th>Lead time</th></tr></thead><tbody><tr>';
-  h+='<td>'+(k.ventas||fmt(S.total_sales))+'</td>';
-  h+='<td class="g">'+(k.ganancia||fmt(S.total_profit))+'</td>';
-  h+='<td class="o">'+(k.margen||(S.margin+'%'))+'</td>';
-  h+='<td class="b">'+(k.ticket||fmt(S.total_sales/S.unique_orders))+'</td>';
-  h+='<td>'+(k.pedidos||fmt(S.unique_orders,'n'))+'</td>';
-  h+='<td>'+(k.clientes||fmt(S.unique_customers,'n'))+'</td>';
-  h+='<td>'+(k.unidades||fmt(S.total_qty,'n'))+'</td>';
-  h+='<td class="o">'+(k.lead_time||((totalLT/totalSC).toFixed(2)+' d'))+'</td>';
-  h+='</tr></tbody></table>';
-  h+='<p class="kpi-cap">Indicador 1 · Panel consolidado de KPIs ejecutivos del período.</p>';
+  h+='<div class="rt"><h1>'+title+'</h1><p>'+subtitle+'</p></div>';
+
+  h+='<div class="kpi-grid">';
+  cards.forEach(function(c){
+    h+='<div class="kpi-card"><div class="kl">'+c.label+'</div><div class="kv '+c.cls+'">'+c.value+'</div></div>';
+  });
+  h+='</div>';
+  h+='<p class="kpi-cap">Panel consolidado de KPIs ejecutivos generado a partir del perfil del dataset.</p>';
   h+='<p class="narr">'+(data.kpi_narrative||'')+'</p>';
+
   (data.sections||[]).forEach(function(sec){
-    var pc=sec.priority==='CRITICO'||sec.priority==='CRÍTICO'?'cr':sec.priority==='ALTO'?'al':'me';
+    var pc=(sec.priority==='CRITICO'||sec.priority==='CRÍTICO')?'cr':(sec.priority==='ALTO'?'al':'me');
+    var tall=(sec.chart&&sec.chart.labels&&sec.chart.labels.length>8);
     h+='<div class="sec"><div class="sec-lbl"><span class="pb '+pc+'">'+sec.priority+'</span><span class="sn">· '+sec.num+'</span><span class="st">'+sec.title+'</span></div>';
-    h+='<div class="ch'+(sec.chart_id==='chart_sub'?' tall':'')+'"><canvas id="'+sec.chart_id+'"></canvas></div>';
+    if(sec.chart){
+      h+='<div class="ch'+(tall?' tall':'')+'"><canvas id="chart_sec_'+sec.num+'"></canvas></div>';
+    }
     h+='<div class="ib">'+sec.insight+'</div></div>';
   });
-  h+='</div><div class="rf"><span>'+authors+'</span><span>Generado el '+new Date().toLocaleDateString('es-CO',{year:'numeric',month:'long',day:'numeric'})+'</span></div>';
+
+  h+='</div><div class="rf"><span>'+author+'</span><span>Generado el '+new Date().toLocaleDateString('es-CO',{year:'numeric',month:'long',day:'numeric'})+'</span></div>';
   document.getElementById('report').innerHTML=h;
   document.getElementById('rw').style.display='block';
+  document.getElementById('rw').classList.add('vis');
   document.getElementById('rm').textContent='Reporte generado · '+new Date().toLocaleString('es-CO');
   document.getElementById('rw').scrollIntoView({behavior:'smooth',block:'start'});
-  setTimeout(function(){buildCharts(data.sections||[],filteredData);},150);
+  setTimeout(function(){
+    (data.sections||[]).forEach(function(sec){
+      if(sec.chart) mkGenericChart('chart_sec_'+sec.num,sec.chart);
+    });
+  },150);
 }
 
 function setSt(v,t){
